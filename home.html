@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ethereal · study hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --green-deep: #0b4d39; --green-mid: #197a59; --green-light: #329e75;
+            --glass-white: rgba(255,255,255,0.48); --glass-border: rgba(255,255,255,0.65);
+            --shadow-deep: rgba(30,70,50,0.22); --text-dark: #164d3a; --text-mid: #2b6b52;
+        }
+        body { font-family:'DM Sans',sans-serif; background:linear-gradient(145deg,#e4f2ed 0%,#cde9df 100%); min-height:100vh; padding:1.5rem; position:relative; overflow-x:hidden; }
+        body::before { content:''; position:fixed; width:420px; height:420px; background:radial-gradient(circle at 40% 40%,#b8e1d2,#9fd4bf); top:-100px; left:-80px; border-radius:50%; filter:blur(90px); z-index:0; animation:orb 20s infinite alternate ease-in-out; }
+        body::after  { content:''; position:fixed; width:480px; height:480px; background:radial-gradient(circle,#c2f0df,#a6dfcb); bottom:-110px; right:-70px; border-radius:50%; filter:blur(110px); z-index:0; animation:orb 26s infinite alternate-reverse; }
+        @keyframes orb { 0%{transform:translate(0,0) scale(1);opacity:.5} 100%{transform:translate(40px,-35px) scale(1.2);opacity:.8} }
+
+        .glass-case { position:relative; z-index:20; max-width:1280px; width:100%; margin:0 auto; background:var(--glass-white); backdrop-filter:blur(16px) saturate(180%); -webkit-backdrop-filter:blur(16px) saturate(180%); border-radius:48px; box-shadow:0 32px 64px var(--shadow-deep),inset 0 1px 3px rgba(255,255,255,.85); border:1px solid var(--glass-border); padding:2rem 2.2rem 2.8rem; }
+
+        .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.6rem; flex-wrap:wrap; gap:12px; }
+        .logo { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:500; background:linear-gradient(120deg,#0b4d39,#197a59); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:flex; align-items:center; gap:10px; }
+        .logo i { background:rgba(50,120,90,.18); padding:10px; border-radius:50%; color:#1b6e50; font-size:1.6rem; -webkit-text-fill-color:#1b6e50; }
+
+        /* ── PROFILE DROPDOWN ── */
+        .profile-wrap { position:relative; z-index:200; }
+        .profile-trigger {
+            background:rgba(255,255,255,.72); backdrop-filter:blur(6px);
+            padding:.6rem 1.4rem; border-radius:60px; font-weight:500; color:#124d39;
+            border:1px solid rgba(255,255,255,.85); box-shadow:0 6px 18px rgba(60,120,90,.14);
+            font-size:.9rem; display:flex; align-items:center; gap:8px;
+            cursor:pointer; transition:.18s; user-select:none;
+        }
+        .profile-trigger:hover { background:rgba(255,255,255,.9); box-shadow:0 8px 22px rgba(60,120,90,.2); }
+        .profile-trigger .chevron { font-size:.7rem; color:var(--green-mid,#197a59); transition:transform .22s; }
+        .profile-trigger.open .chevron { transform:rotate(180deg); }
+        .profile-dropdown {
+            position:absolute; top:calc(100% + 10px); right:0;
+            min-width:220px;
+            background:rgba(245,252,248,.97); backdrop-filter:blur(16px);
+            border-radius:22px; border:1px solid rgba(255,255,255,.85);
+            box-shadow:0 20px 48px -12px rgba(20,70,50,.28);
+            padding:.5rem;
+            display:none; flex-direction:column; gap:2px;
+            animation:dropIn .22s cubic-bezier(.2,.9,.3,1.1);
+        }
+        .profile-dropdown.open { display:flex; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+        .dd-header { padding:.7rem 1rem .6rem; border-bottom:1px solid rgba(50,158,117,.12); margin-bottom:.3rem; }
+        .dd-header .dd-roll { font-weight:600; color:#0b4d39; font-size:.92rem; }
+        .dd-header .dd-sub  { font-size:.75rem; color:#2b6b52; font-weight:300; margin-top:1px; }
+        .dd-item { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:500; color:#164d3a; cursor:pointer; transition:.15s; text-decoration:none; }
+        .dd-item i { width:16px; text-align:center; color:#329e75; font-size:.82rem; }
+        .dd-item:hover { background:rgba(50,158,117,.1); color:#0b4d39; }
+        .dd-divider { height:1px; background:rgba(50,158,117,.12); margin:.3rem .5rem; }
+        .dd-logout { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:600; color:#c53030; cursor:pointer; transition:.15s; }
+        .dd-logout i { width:16px; text-align:center; font-size:.82rem; }
+        .dd-logout:hover { background:rgba(229,62,62,.08); }
+
+        .nav-menu { display:flex; gap:.7rem; background:rgba(255,255,255,.4); backdrop-filter:blur(8px); padding:.65rem 1.1rem; border-radius:80px; margin-bottom:1.8rem; border:1px solid rgba(255,255,255,.7); flex-wrap:wrap; }
+        .nav-item { flex:1 0 auto; text-align:center; min-width:80px; }
+        .nav-item a { text-decoration:none; color:#1b4f3d; font-weight:500; padding:.45rem .8rem; border-radius:40px; display:inline-block; width:100%; transition:.2s; font-size:.95rem; }
+        .nav-item.active a { background:white; color:#0f6747; box-shadow:0 10px 20px -12px #1f5e44; font-weight:600; }
+        .nav-item a:hover { background:rgba(255,255,255,.8); transform:translateY(-2px); }
+
+        .search-bar { display:flex; gap:10px; margin-bottom:2rem; }
+        .search-bar input { flex:1; padding:.85rem 1.4rem; background:rgba(255,255,255,.7); border:1px solid rgba(180,210,190,.8); border-radius:50px; font-size:.95rem; font-family:'DM Sans',sans-serif; outline:none; color:var(--text-dark); transition:.2s; }
+        .search-bar input:focus { background:white; box-shadow:0 0 0 3px rgba(50,150,110,.2); border-color:#4caa83; }
+        .search-bar button { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; border:none; padding:0 2rem; border-radius:50px; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; font-size:.95rem; box-shadow:0 8px 18px -8px #1c6048; transition:.15s; }
+        .search-bar button:hover { transform:translateY(-2px); }
+
+        .section-header { display:flex; align-items:center; justify-content:space-between; margin:2rem 0 1.2rem; flex-wrap:wrap; gap:8px; }
+        .section-title { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:500; color:var(--text-dark); display:flex; align-items:center; gap:10px; }
+        .section-title i { color:var(--green-mid); font-size:1.3rem; }
+        .section-tag { background:rgba(50,158,117,.15); color:var(--green-deep); padding:.3rem 1.1rem; border-radius:40px; font-size:.82rem; font-weight:600; border:1px solid rgba(50,158,117,.25); }
+
+        .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.3rem; margin-bottom:2rem; }
+        .card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:28px; padding:1.5rem 1.4rem; border:1px solid var(--glass-border); box-shadow:0 16px 32px -16px var(--shadow-deep),inset 0 1px 2px white; display:flex; flex-direction:column; transition:.22s; }
+        .card:hover { transform:translateY(-5px); background:rgba(255,255,255,.68); box-shadow:0 24px 40px -16px rgba(20,80,55,.22); }
+        .card h3 { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:500; color:var(--text-dark); margin-bottom:.3rem; }
+        .meta { color:var(--text-mid); font-size:.82rem; margin-bottom:.6rem; font-weight:300; }
+        .badge { background:rgba(50,158,117,.12); color:var(--green-deep); padding:.2rem .8rem; border-radius:30px; font-size:.74rem; font-weight:600; border:1px solid rgba(50,158,117,.22); width:fit-content; }
+        .badge-online { background:rgba(20,140,180,.1); color:#0a5a7a; border-color:rgba(20,140,180,.25); }
+
+        .pdf-units { margin-top:.9rem; border-top:1px solid rgba(50,158,117,.15); padding-top:.8rem; display:flex; flex-direction:column; gap:.55rem; }
+        .unit-item { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.6); padding:.5rem .9rem .5rem 1rem; border-radius:40px; border:1px solid rgba(180,215,195,.6); gap:8px; }
+        .unit-name { font-weight:500; color:var(--text-dark); font-size:.83rem; flex:1; }
+        .unit-actions { display:flex; gap:5px; flex-shrink:0; }
+        .pdf-btn { background:rgba(255,255,255,.8); border:1px solid rgba(180,210,190,.8); padding:.32rem .8rem; border-radius:30px; font-size:.73rem; font-weight:600; color:var(--text-dark); text-decoration:none; transition:.15s; display:inline-flex; align-items:center; gap:4px; cursor:pointer; font-family:'DM Sans',sans-serif; white-space:nowrap; }
+        .pdf-btn:hover { background:linear-gradient(105deg,#1c8864,#126a4a); border-color:transparent; color:white; box-shadow:0 6px 14px -6px #1c6048; }
+        .pdf-btn.open-pdf { background:rgba(50,158,117,.12); border-color:rgba(50,158,117,.3); color:var(--green-deep); }
+        .pdf-btn.open-pdf:hover { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; }
+        .own-note { font-size:.73rem; color:var(--green-mid); font-style:italic; margin-top:.6rem; padding:.35rem .75rem; background:rgba(50,158,117,.07); border-radius:20px; }
+
+        /* VIDEO */
+        .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.3rem; margin-bottom:2rem; }
+        .video-card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:28px; overflow:hidden; border:1px solid var(--glass-border); box-shadow:0 16px 32px -16px var(--shadow-deep); transition:.22s; }
+        .video-card:hover { transform:translateY(-4px); box-shadow:0 24px 40px -16px rgba(20,80,55,.22); }
+        .video-embed { position:relative; aspect-ratio:16/9; background:#0b4d39; }
+        .video-embed iframe { width:100%; height:100%; border:none; display:block; }
+        .video-info { padding:.9rem 1.1rem 1rem; }
+        .video-title { font-weight:600; color:var(--text-dark); font-size:.92rem; margin-bottom:.35rem; }
+        .video-meta { display:flex; gap:.8rem; font-size:.76rem; color:var(--text-mid); flex-wrap:wrap; align-items:center; }
+        .video-meta i { color:var(--green-light); font-size:.72rem; }
+        .vtag { background:rgba(50,158,117,.12); color:var(--green-deep); padding:.15rem .6rem; border-radius:18px; font-size:.71rem; font-weight:600; border:1px solid rgba(50,158,117,.2); }
+
+        .section-divider { height:1px; background:linear-gradient(90deg,transparent,rgba(50,158,117,.3),transparent); margin:1.5rem 0; }
+        .footer-note { text-align:center; color:var(--text-mid); padding:.9rem 2rem; background:rgba(255,255,255,.3); border-radius:60px; font-size:.86rem; font-weight:300; }
+
+        /* ── VIEWER MODAL ── */
+        .viewer-modal { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:1000; visibility:hidden; opacity:0; transition:.25s; }
+        .viewer-modal.show { visibility:visible; opacity:1; }
+        .modal-content { background:rgba(235,248,242,.98); backdrop-filter:blur(20px); width:93vw; max-width:1100px; height:92vh; border-radius:36px; padding:1.4rem 1.6rem 1.2rem; display:flex; flex-direction:column; box-shadow:0 50px 80px -20px rgba(0,0,0,.55); border:1px solid var(--glass-border); }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; padding-bottom:.85rem; border-bottom:1px solid rgba(50,158,117,.2); margin-bottom:.8rem; flex-wrap:wrap; gap:8px; }
+        .modal-header h2 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--text-dark); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .modal-actions { display:flex; gap:8px; flex-shrink:0; }
+        .m-btn { display:inline-flex; align-items:center; gap:6px; padding:.42rem 1.1rem; border-radius:30px; font-size:.8rem; font-weight:600; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:.15s; }
+        .m-btn-open { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; box-shadow:0 6px 14px -6px #1c6048; }
+        .m-btn-open:hover { transform:translateY(-1px); }
+        .close-btn { background:rgba(255,255,255,.75); border:1px solid rgba(180,210,190,.8); width:36px; height:36px; border-radius:50%; font-size:1.15rem; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; justify-content:center; transition:.15s; }
+        .close-btn:hover { background:#e11d48; color:white; border-color:#e11d48; }
+        .pdf-frame { flex:1; border-radius:18px; overflow:hidden; border:1px solid rgba(180,210,190,.5); background:#f8fbf9; position:relative; }
+        .pdf-frame iframe { width:100%; height:100%; border:none; display:block; }
+
+        /* Loading / error states inside modal */
+        .viewer-status { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:2rem; text-align:center; border-radius:18px; background:rgba(240,250,245,.95); }
+        .viewer-status.hidden { display:none; }
+        .spinner { width:44px; height:44px; border:4px solid rgba(50,158,117,.2); border-top-color:#1c8864; border-radius:50%; animation:spin .8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .status-title { font-weight:600; color:var(--text-dark); font-size:1rem; }
+        .status-sub { color:var(--text-mid); font-size:.85rem; line-height:1.5; }
+        .fallback-btns { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:.5rem; }
+        .fb-btn { display:inline-flex; align-items:center; gap:6px; padding:.5rem 1.3rem; border-radius:30px; font-size:.83rem; font-weight:600; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:.15s; text-decoration:none; }
+        .fb-btn-primary { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; box-shadow:0 6px 14px -6px #1c6048; }
+        .fb-btn-secondary { background:rgba(50,158,117,.12); color:var(--green-deep); border:1px solid rgba(50,158,117,.3); }
+        .fb-btn:hover { transform:translateY(-2px); }
+
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-thumb { background:rgba(50,158,117,.35); border-radius:10px; }
+    </style>
+</head>
+<body>
+<div class="glass-case">
+
+    <div class="top-bar">
+        <div class="logo"><i class="fas fa-book-open"></i> study·ethereal</div>
+        <div class="profile-wrap" id="profileWrap">
+            <div class="profile-trigger" id="profileTrigger" onclick="toggleDropdown()">
+                <i class="fas fa-user-circle" style="color:#1f8a64;"></i>
+                <span id="rollValue">—</span>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dd-header">
+                    <div class="dd-roll" id="ddRoll">—</div>
+                    <div class="dd-sub">Logged in · StudentHub</div>
+                </div>
+                <a class="dd-item" href="home.html" id="ddHome"><i class="fas fa-file-pdf"></i> PDFs &amp; Videos</a>
+                <a class="dd-item" href="recycling.html" id="ddRecycle"><i class="fas fa-recycle"></i> Recycling</a>
+                <a class="dd-item" href="jobs.html" id="ddJobs"><i class="fas fa-briefcase"></i> Jobs</a>
+                <a class="dd-item" href="feedback.html" id="ddFeedback"><i class="fas fa-comment-dots"></i> Feedback</a>
+                <a class="dd-item" href="projects.html" id="ddProjects"><i class="fas fa-rocket"></i> Projects</a>
+                <div class="dd-divider"></div>
+                <div class="dd-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-menu" id="navMenu"></div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search subjects, units, topics...">
+        <button id="searchBtn"><i class="fas fa-search"></i> Search</button>
+    </div>
+
+    <!-- ═══ PDF SECTION ═══ -->
+    <div class="section-header">
+        <div class="section-title"><i class="fas fa-folder-open"></i> Subject PDFs — open &amp; download</div>
+        <span class="section-tag">click Open to read inline</span>
+    </div>
+
+    <div class="card-grid" id="pdfGrid">
+
+        <!-- DS -->
+        <div class="card">
+            <h3>📂 Data Structures</h3>
+            <div class="meta">Prof. Sharma · 5 units · 2025</div>
+            <span class="badge">✅ your files</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Arrays &amp; Linked Lists</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit1.docx" data-subject="DS – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit1.docx">📥 DOCX</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Stacks &amp; Queues</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit2.docx" data-subject="DS – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit2.docx">📥 DOCX</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Trees &amp; Graphs</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit3.docx" data-subject="DS – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit3.docx">📥 DOCX</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Sorting &amp; Searching</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit4.docx" data-subject="DS – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit4.docx">📥 DOCX</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Advanced Trees</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit5.docx" data-subject="DS – Unit 5">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit5.docx">📥 DOCX</a></div></div>
+            </div>
+            <p class="own-note">📁 Keep ds-unit1.docx…ds-unit5.docx in the same folder as this HTML</p>
+        </div>
+
+        <!-- DBMS -->
+        <div class="card">
+            <h3>🗄️ DBMS</h3>
+            <div class="meta">Dr. Patel · 5 units · 2025</div>
+            <span class="badge">✅ your files</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – ER Model</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit1.pdf" data-subject="DBMS – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit1.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Relational Algebra</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit2.pdf" data-subject="DBMS – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit2.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – SQL Queries</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit3.pdf" data-subject="DBMS – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit3.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Normalization</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit4.pdf" data-subject="DBMS – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit4.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Transactions</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit5.pdf" data-subject="DBMS – Unit 5">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit5.pdf">📥 PDF</a></div></div>
+            </div>
+            <p class="own-note">📁 Keep files inside a <strong>PDFS/</strong> folder next to this HTML</p>
+        </div>
+
+        <!-- OS -->
+        <div class="card">
+            <h3>🐧 Operating Systems</h3>
+            <div class="meta">Your notes · 3 units</div>
+            <span class="badge">✅ your files</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Processes &amp; Threads</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/os-unit1.pdf" data-subject="OS – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/os-unit1.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Memory Management</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/os-unit2.docx" data-subject="OS – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/os-unit2.docx">📥 DOCX</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – File Systems</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/os-unit3.pdf" data-subject="OS – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/os-unit3.pdf">📥 PDF</a></div></div>
+            </div>
+            <p class="own-note">📁 Keep OS files inside <strong>PDFS/</strong> folder</p>
+        </div>
+
+        <!-- UHV -->
+        <div class="card">
+            <h3>🌿 UHV</h3>
+            <div class="meta">Universal Human Values · 4 units</div>
+            <span class="badge">✅ your files</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Introduction</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit1.pdf" data-subject="UHV – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit1.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Harmony in Self</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit2.pdf" data-subject="UHV – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit2.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Harmony in Family</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit3.pdf" data-subject="UHV – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit3.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Harmony in Society</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit4.pdf" data-subject="UHV – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit4.pdf">📥 PDF</a></div></div>
+            </div>
+            <p class="own-note">📁 Keep UHV files inside <strong>PDFS/</strong> folder</p>
+        </div>
+
+        <!-- SE -->
+        <div class="card">
+            <h3>🛠️ Software Engineering</h3>
+            <div class="meta">SE · 4 units</div>
+            <span class="badge">✅ your files</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – SDLC Models</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit1.pdf" data-subject="SE – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit1.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Requirements</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit2.pdf" data-subject="SE – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit2.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Design</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit3.pdf" data-subject="SE – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit3.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Testing</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit4.pdf" data-subject="SE – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit4.pdf">📥 PDF</a></div></div>
+            </div>
+            <p class="own-note">📁 Keep SE files inside <strong>PDFS/</strong> folder</p>
+        </div>
+
+        <!-- JAVA -->
+        <div class="card">
+            <h3>☕ Java Programming</h3>
+            <div class="meta">Java · 5 units · 2025</div>
+            <span class="badge">✅ your files</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Basics &amp; Syntax</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit1.pdf" data-subject="Java – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit1.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – OOP Concepts</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit2.pdf" data-subject="Java – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit2.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Collections</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit3.pdf" data-subject="Java – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit3.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Multithreading</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit4.pdf" data-subject="Java – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit4.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Java 8 Features</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit5.pdf" data-subject="Java – Unit 5">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit5.pdf">📥 PDF</a></div></div>
+            </div>
+            <p class="own-note">📁 Keep Java files inside <strong>PDFS/</strong> folder</p>
+        </div>
+
+        <!-- COMPUTER NETWORKS -->
+        <div class="card">
+            <h3>🌐 Computer Networks</h3>
+            <div class="meta">Dordal · Intro to Computer Networks · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – OSI &amp; TCP/IP Model</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf" data-subject="CN – OSI &amp; TCP/IP">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Data Link Layer</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf" data-subject="CN – Data Link Layer">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Network Layer &amp; IP</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf" data-subject="CN – Network Layer">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Transport Layer &amp; TCP</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf" data-subject="CN – Transport Layer">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Application Layer</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf" data-subject="CN – Application Layer">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('http://intronetworks.cs.luc.edu/current2/ComputerNetworks.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- ALGORITHMS -->
+        <div class="card">
+            <h3>⚡ Algorithms</h3>
+            <div class="meta">CLRS / MIT · 5 units · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Complexity &amp; Big-O</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – CLRS">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Sorting Algorithms</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – Sorting">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Divide &amp; Conquer</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – D&C">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Dynamic Programming</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – DP">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Graph Algorithms</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – Graphs">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- C PROGRAMMING -->
+        <div class="card">
+            <h3>🖥️ C Programming</h3>
+            <div class="meta">The C Book · GBdirect · Banahan, Brady, Doran · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Intro, Variables &amp; Operators</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C Programming – Let Us C">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Functions &amp; Recursion</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Functions">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Arrays, Pointers &amp; Strings</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Arrays & Pointers">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Structures &amp; File I/O</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Structures">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- MACHINE LEARNING -->
+        <div class="card">
+            <h3>🤖 Machine Learning</h3>
+            <div class="meta">Tom Mitchell · Machine Learning · CMU · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Supervised Learning</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Stanford CS229">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Regression &amp; SVM</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Regression">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Neural Networks</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Neural Networks">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Unsupervised Learning</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Unsupervised">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Model Evaluation</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Evaluation">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- CLOUD COMPUTING -->
+        <div class="card">
+            <h3>☁️ Cloud Computing</h3>
+            <div class="meta">AWS Official Whitepapers · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Cloud Fundamentals</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" data-subject="Cloud – AWS Overview">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – IaaS / PaaS / SaaS</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" data-subject="Cloud – Service Models">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Docker &amp; Containers</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" data-subject="Cloud – Docker">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – DevOps &amp; CI/CD</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" data-subject="Cloud – DevOps">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- WEB DEVELOPMENT -->
+        <div class="card">
+            <h3>🌍 Web Development</h3>
+            <div class="meta">Mozilla · W3C · open notes · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – HTML &amp; CSS Basics</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – HTML & CSS">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://eloquentjavascript.net/Eloquent_JavaScript.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – JavaScript Fundamentals</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – JavaScript">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://eloquentjavascript.net/Eloquent_JavaScript.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – DOM &amp; Events</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – DOM">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://eloquentjavascript.net/Eloquent_JavaScript.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Node.js &amp; Express</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – Node.js">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://eloquentjavascript.net/Eloquent_JavaScript.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – REST APIs &amp; Deployment</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – REST APIs">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://eloquentjavascript.net/Eloquent_JavaScript.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+        <!-- PYTHON -->
+        <div class="card">
+            <h3>🐍 Python Programming</h3>
+            <div class="meta">Think Python · Allen Downey · free official</div>
+            <span class="badge badge-online">🌍 online PDF</span>
+            <div class="pdf-units">
+                <div class="unit-item"><span class="unit-name">Unit 1 – Python Basics &amp; Syntax</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Think Python Book">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Functions &amp; Modules</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Functions">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – OOP in Python</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – OOP">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – File Handling &amp; Exceptions</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Files">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – NumPy, Pandas &amp; Libraries</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Libraries">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+            </div>
+        </div>
+
+    </div><!-- /pdfGrid -->
+
+    <div class="section-divider"></div>
+
+    <!-- ═══ VIDEO SECTION ═══ -->
+    <div class="section-header">
+        <div class="section-title"><i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube Playlists — Watch Right Here</div>
+        <span class="section-tag">plays on this page</span>
+    </div>
+    <p style="color:var(--text-mid);font-size:.88rem;font-weight:300;margin-bottom:1.2rem;">All videos are embedded — press play and watch without leaving the page.</p>
+
+    <div class="video-grid" id="videoGrid">
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLDN4rrl48XKpZkf03iYFI-O29szjTrs_O" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">DSA Full Course — Abdul Bari</div><div class="video-meta"><span class="vtag">Data Structures</span><span><i class="fas fa-eye"></i> 8.2M views</span><span><i class="fas fa-clock"></i> 12 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLmXKhU9FNesR1rSES7oLdJaNFgmuj0SYV" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">DBMS Complete — Gate Smashers</div><div class="video-meta"><span class="vtag">DBMS</span><span><i class="fas fa-eye"></i> 5.6M views</span><span><i class="fas fa-clock"></i> 8 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLBlnK6fEyqRiVhbXDGLXDk_OQAeuVcp2O" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Operating Systems — Neso Academy</div><div class="video-meta"><span class="vtag">OS</span><span><i class="fas fa-eye"></i> 9.1M views</span><span><i class="fas fa-clock"></i> 10 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLBlnK6fEyqRgMCUAG0XRw78UA8qnv6jEx" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Computer Networks — Neso Academy</div><div class="video-meta"><span class="vtag">Networks</span><span><i class="fas fa-eye"></i> 4.8M views</span><span><i class="fas fa-clock"></i> 9 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLdo5W4Nhv31a8UcMN9-35ghv8qyFWD9_S" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">C Programming — Jenny's Lectures</div><div class="video-meta"><span class="vtag">C Programming</span><span><i class="fas fa-eye"></i> 7.2M views</span><span><i class="fas fa-clock"></i> 34 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLZoTAELRoHXiSa6hSX5MfZZH-RBFGdEYs" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Machine Learning — Krish Naik</div><div class="video-meta"><span class="vtag">Machine Learning</span><span><i class="fas fa-eye"></i> 9.8M views</span><span><i class="fas fa-clock"></i> 20 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/rfscVS0vtbw" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Python Full Course — FreeCodeCamp</div><div class="video-meta"><span class="vtag">Python</span><span><i class="fas fa-eye"></i> 19M views</span><span><i class="fas fa-clock"></i> 4 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLsyeobzWxl7pe_IiTfNyr55kwJPWbgxB5" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Java Full Course — Telusko</div><div class="video-meta"><span class="vtag">Java</span><span><i class="fas fa-eye"></i> 8.5M views</span><span><i class="fas fa-clock"></i> 13 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLEbnTDJUr_IcPtUXFy2b1sGRPsLFMghhS" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Algorithms — Abdul Bari (Advanced)</div><div class="video-meta"><span class="vtag">Algorithms</span><span><i class="fas fa-eye"></i> 6.2M views</span><span><i class="fas fa-clock"></i> 16 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/M988_fsOSWo" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Cloud Computing — Simplilearn</div><div class="video-meta"><span class="vtag">Cloud &amp; AWS</span><span><i class="fas fa-eye"></i> 2.9M views</span><span><i class="fas fa-clock"></i> 6 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/nu_pCVPKzTk" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">Web Dev Bootcamp — Traversy Media</div><div class="video-meta"><span class="vtag">Web Dev</span><span><i class="fas fa-eye"></i> 3.6M views</span><span><i class="fas fa-clock"></i> 9 hrs</span></div></div>
+        </div>
+        <div class="video-card">
+            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLUl4u3cNGP63UUkfL0onkxF6MYgVa04Fn" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
+            <div class="video-info"><div class="video-title">MIT OS Lectures — OpenCourseWare</div><div class="video-meta"><span class="vtag">Operating Systems</span><span><i class="fas fa-eye"></i> MIT OCW</span><span><i class="fas fa-clock"></i> Full Course</span></div></div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-info-circle"></i>
+        <strong>Your own files</strong> (DS, DBMS, OS, UHV, SE, Java) → put them in a <code>PDFS/</code> folder next to this HTML &nbsp;·&nbsp;
+        <strong>Other subjects</strong> → linked to free public PDFs from Stanford / MIT / AWS &nbsp;·&nbsp;
+        Videos play directly on this page
+    </div>
+
+</div><!-- /glass-case -->
+
+<!-- ══════════ VIEWER MODAL (local files only) ══════════ -->
+<div class="viewer-modal" id="viewerModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">📖 Reader</h2>
+      <button class="close-btn" id="closeModalBtn">&times;</button>
+    </div>
+    <div class="pdf-frame" id="pdfFrame">
+      <div class="viewer-status" id="statusLoading">
+        <div class="spinner"></div>
+        <div class="status-title">Loading…</div>
+        <div class="status-sub">Please wait.</div>
+      </div>
+      <div class="viewer-status hidden" id="statusDocx">
+        <div style="font-size:2.5rem">📄</div>
+        <div class="status-title">DOCX — cannot preview in browser</div>
+        <div class="status-sub">Download and open in MS Word, or upload to Google Docs.</div>
+        <div class="fallback-btns">
+          <a id="docxDownload" href="#" download class="fb-btn fb-btn-primary"><i class="fas fa-download"></i> Download File</a>
+          <a href="https://drive.google.com/drive/my-drive" target="_blank" class="fb-btn fb-btn-secondary"><i class="fab fa-google-drive"></i> Google Drive</a>
+        </div>
+      </div>
+      <iframe id="pdfIframe" src="about:blank" title="PDF Viewer"
+              style="width:100%;height:100%;border:none;display:none;"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+    /* ── Roll / Nav ── */
+    var urlParams   = new URLSearchParams(window.location.search);
+    var roll        = urlParams.get('roll') || localStorage.getItem('studentRoll') || '';
+    var rollDisplay = roll || '—';
+    if (roll) localStorage.setItem('studentRoll', roll);
+    document.getElementById('rollValue').innerText = rollDisplay;
+    document.getElementById('ddRoll').innerText    = rollDisplay;
+    ['ddHome','ddRecycle','ddJobs','ddFeedback','ddProjects'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.href = el.getAttribute('href') + '?roll=' + encodeURIComponent(rollDisplay);
+    });
+
+    window.toggleDropdown = function(){
+        document.getElementById('profileTrigger').classList.toggle('open');
+        document.getElementById('profileDropdown').classList.toggle('open');
+    };
+    document.addEventListener('click', function(e){
+        var wrap = document.getElementById('profileWrap');
+        if (wrap && !wrap.contains(e.target)){
+            document.getElementById('profileTrigger').classList.remove('open');
+            document.getElementById('profileDropdown').classList.remove('open');
+        }
+    });
+    window.logout = function(){
+        localStorage.removeItem('studentRoll');
+        window.location.href = 'login.html';
+    };
+
+    var navItems = [
+        { name:'📄 PDFs & Videos', page:'home.html',      active:true  },
+        { name:'♻️ Recycling',     page:'recycling.html', active:false },
+        { name:'💼 Jobs',          page:'jobs.html',      active:false },
+        { name:'💬 Feedback',      page:'feedback.html',  active:false },
+        { name:'🚀 Projects',      page:'projects.html',  active:false }
+    ];
+    var navMenu = document.getElementById('navMenu');
+    navItems.forEach(function(item){
+        var div = document.createElement('div');
+        div.className = 'nav-item' + (item.active ? ' active' : '');
+        var a = document.createElement('a');
+        a.href = item.page + '?roll=' + encodeURIComponent(rollDisplay);
+        a.innerText = item.name;
+        div.appendChild(a); navMenu.appendChild(div);
+    });
+
+    /* ── Modal (for local files) ── */
+    var modal       = document.getElementById('viewerModal');
+    var modalTitle  = document.getElementById('modalTitle');
+    var pdfIframe   = document.getElementById('pdfIframe');
+    var closeBtn    = document.getElementById('closeModalBtn');
+    var stLoading   = document.getElementById('statusLoading');
+    var stDocx      = document.getElementById('statusDocx');
+    var docxDl      = document.getElementById('docxDownload');
+
+    function showStatus(el) {
+        [stLoading, stDocx].forEach(function(e){ e.classList.add('hidden'); });
+        pdfIframe.style.display = 'none';
+        if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        pdfIframe.src = 'about:blank';
+        showStatus(null);
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+    /* ── Open PDF buttons ── */
+    document.querySelectorAll('.open-pdf').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            var file    = this.getAttribute('data-file');
+            var subject = this.getAttribute('data-subject') || 'Document';
+            var ext     = file.split('?')[0].split('.').pop().toLowerCase();
+
+            /* DOCX → show modal with download tip */
+            if (ext === 'docx' || ext === 'doc') {
+                modalTitle.innerText = '📄 ' + subject;
+                showStatus(stDocx);
+                docxDl.href = file;
+                docxDl.setAttribute('download', file.split('/').pop());
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            /* REMOTE PDF → open directly in new tab (browser has built-in PDF viewer) */
+            if (file.startsWith('http')) {
+                window.open(file, '_blank');
+                return;
+            }
+
+            /* LOCAL PDF → show in modal iframe (works when served via server) */
+            modalTitle.innerText = '📖 ' + subject;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            showStatus(stLoading);
+
+            pdfIframe.onload = function(){
+                stLoading.classList.add('hidden');
+                pdfIframe.style.display = 'block';
+            };
+            pdfIframe.src = file;
+        });
+    });
+
+    /* ── Download buttons ── */
+    document.querySelectorAll('a.download-btn[data-pdf]').forEach(function(btn){
+        var file = btn.getAttribute('data-pdf');
+        var ext  = file.split('.').pop().toLowerCase();
+        btn.innerHTML = (ext === 'docx' || ext === 'doc') ? '📥 DOCX' : '📥 PDF';
+        btn.addEventListener('click', function(e){
+            e.preventDefault();
+            var a = document.createElement('a');
+            a.href = file; a.download = file.split('/').pop();
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            var orig = this.innerHTML;
+            this.innerHTML = '✅ Done!';
+            var self = this;
+            setTimeout(function(){ self.innerHTML = orig; }, 1200);
+        });
+    });
+
+    /* ── Search ── */
+    var searchInput = document.getElementById('searchInput');
+    function filter(){
+        var term = searchInput.value.toLowerCase().trim();
+        document.querySelectorAll('.card, .video-card').forEach(function(c){
+            c.style.display = (!term || c.innerText.toLowerCase().includes(term)) ? '' : 'none';
+        });
+    }
+    document.getElementById('searchBtn').addEventListener('click', filter);
+    searchInput.addEventListener('keyup', function(e){ if (e.key === 'Enter') filter(); });
+})();
+</script>
+</body>
+</html>

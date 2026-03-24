@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ethereal · job portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        :root {
+            --gd:  #0b4d39; --gm:  #197a59; --gl:  #329e75; --gp:  #9fd4bf;
+            --gw:  rgba(255,255,255,.48); --gb:  rgba(255,255,255,.65);
+            --sd:  rgba(30,70,50,.22);    --td:  #164d3a; --tm:  #2b6b52; --ts: #3f7060;
+            --r36: 36px; --r28: 28px; --r60: 60px;
+        }
+
+        body { font-family:'DM Sans',sans-serif; background:linear-gradient(145deg,#e4f2ed,#cde9df); min-height:100vh; padding:1.5rem; position:relative; overflow-x:hidden; }
+        body::before { content:''; position:fixed; width:420px; height:420px; background:radial-gradient(circle at 40% 40%,#b8e1d2,#9fd4bf); top:-100px; left:-80px; border-radius:50%; filter:blur(90px); z-index:0; animation:orb 20s infinite alternate ease-in-out; }
+        body::after  { content:''; position:fixed; width:480px; height:480px; background:radial-gradient(circle,#c2f0df,#a6dfcb); bottom:-110px; right:-70px; border-radius:50%; filter:blur(110px); z-index:0; animation:orb 26s infinite alternate-reverse; }
+        @keyframes orb { 0%{transform:translate(0,0) scale(1);opacity:.5} 100%{transform:translate(40px,-35px) scale(1.2);opacity:.8} }
+
+        /* ── SHELL ── */
+        .glass-case { position:relative; z-index:20; max-width:1320px; width:100%; margin:0 auto; background:var(--gw); backdrop-filter:blur(16px) saturate(180%); -webkit-backdrop-filter:blur(16px) saturate(180%); border-radius:48px; box-shadow:0 32px 64px var(--sd),inset 0 1px 3px rgba(255,255,255,.85); border:1px solid var(--gb); padding:2rem 2.2rem 2.8rem; animation:appear .6s ease-out; }
+        @keyframes appear { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── TOP BAR ── */
+        .top-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.6rem; flex-wrap:wrap; gap:12px; }
+        .logo { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:500; background:linear-gradient(120deg,#0b4d39,#197a59); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:flex; align-items:center; gap:10px; }
+        .logo i { background:rgba(50,120,90,.18); padding:10px; border-radius:50%; color:#1b6e50; font-size:1.6rem; -webkit-text-fill-color:#1b6e50; }
+        .top-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .date-pill { background:rgba(255,255,255,.6); border:1px solid var(--gb); padding:.5rem 1.1rem; border-radius:40px; font-size:.82rem; color:var(--tm); display:flex; align-items:center; gap:6px; }
+        .user-badge { background:rgba(255,255,255,.72); backdrop-filter:blur(6px); padding:.65rem 1.6rem; border-radius:60px; font-weight:500; color:#124d39; border:1px solid rgba(255,255,255,.85); box-shadow:0 6px 18px rgba(60,120,90,.14); font-size:.9rem; display:flex; align-items:center; gap:7px; }
+        /* ── PROFILE DROPDOWN ── */
+        .profile-wrap { position:relative; z-index:200; }
+        .profile-trigger { background:rgba(255,255,255,.72); backdrop-filter:blur(6px); padding:.6rem 1.4rem; border-radius:60px; font-weight:500; color:#124d39; border:1px solid rgba(255,255,255,.85); box-shadow:0 6px 18px rgba(60,120,90,.14); font-size:.9rem; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.18s; user-select:none; }
+        .profile-trigger:hover { background:rgba(255,255,255,.9); }
+        .profile-trigger .chevron { font-size:.7rem; color:#197a59; transition:transform .22s; }
+        .profile-trigger.open .chevron { transform:rotate(180deg); }
+        .profile-dropdown { position:absolute; top:calc(100% + 10px); right:0; min-width:220px; background:rgba(245,252,248,.97); backdrop-filter:blur(16px); border-radius:22px; border:1px solid rgba(255,255,255,.85); box-shadow:0 20px 48px -12px rgba(20,70,50,.28); padding:.5rem; display:none; flex-direction:column; gap:2px; animation:dropIn .22s cubic-bezier(.2,.9,.3,1.1); }
+        .profile-dropdown.open { display:flex; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+        .dd-header { padding:.7rem 1rem .6rem; border-bottom:1px solid rgba(50,158,117,.12); margin-bottom:.3rem; }
+        .dd-header .dd-roll { font-weight:600; color:#0b4d39; font-size:.92rem; }
+        .dd-header .dd-sub  { font-size:.75rem; color:#2b6b52; font-weight:300; margin-top:1px; }
+        .dd-item { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:500; color:#164d3a; cursor:pointer; transition:.15s; text-decoration:none; }
+        .dd-item i { width:16px; text-align:center; color:#329e75; font-size:.82rem; }
+        .dd-item:hover { background:rgba(50,158,117,.1); color:#0b4d39; }
+        .dd-divider { height:1px; background:rgba(50,158,117,.12); margin:.3rem .5rem; }
+        .dd-logout { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:600; color:#c53030; cursor:pointer; transition:.15s; }
+        .dd-logout i { width:16px; text-align:center; font-size:.82rem; }
+        .dd-logout:hover { background:rgba(229,62,62,.08); }
+
+        /* ── NAV ── */
+        .nav-menu { display:flex; gap:.7rem; background:rgba(255,255,255,.4); backdrop-filter:blur(8px); padding:.65rem 1.1rem; border-radius:80px; margin-bottom:2rem; border:1px solid rgba(255,255,255,.7); flex-wrap:wrap; }
+        .nav-item { flex:1 0 auto; text-align:center; min-width:80px; }
+        .nav-item a { text-decoration:none; color:#1b4f3d; font-weight:500; padding:.45rem .8rem; border-radius:40px; display:inline-block; width:100%; transition:.2s; font-size:.92rem; }
+        .nav-item.active a { background:white; color:#0f6747; box-shadow:0 10px 20px -12px #1f5e44; font-weight:600; }
+        .nav-item a:hover { background:rgba(255,255,255,.8); transform:translateY(-2px); }
+
+        /* ── SECTION LABEL ── */
+        .sec-label { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:500; color:var(--td); display:flex; align-items:center; gap:9px; margin-bottom:1.1rem; }
+        .sec-label i { color:var(--gm); }
+
+        /* ── REGISTRATION CARD ── */
+        .reg-card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:var(--r36); padding:1.8rem 2rem; border:1px solid var(--gb); box-shadow:0 16px 36px -18px #1c6048,inset 0 1px 2px white; margin-bottom:1.8rem; }
+        .reg-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem; }
+        .fg { display:flex; flex-direction:column; gap:.4rem; }
+        .fg label { font-weight:500; color:var(--td); font-size:.85rem; display:flex; align-items:center; gap:6px; }
+        .fg label i { color:var(--gm); font-size:.8rem; }
+        .fg input, .fg select { padding:.75rem 1.1rem; background:rgba(255,255,255,.72); border:1px solid rgba(180,210,190,.8); border-radius:30px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; color:var(--td); transition:.2s; }
+        .fg input:focus, .fg select:focus { background:white; box-shadow:0 0 0 3px rgba(50,150,110,.2); border-color:#4caa83; }
+        .reg-btn { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; border:none; padding:.85rem 1.5rem; border-radius:60px; font-size:.95rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:9px; box-shadow:0 16px 26px -16px #1c6048,0 3px 0 0 #a2eed5 inset; transition:.15s; grid-column:1/-1; margin-top:.4rem; }
+        .reg-btn:hover { background:linear-gradient(105deg,#249d76,#17855f); transform:translateY(-2px); box-shadow:0 22px 30px -16px #1c6048,0 3px 0 0 #c1ffe8 inset; }
+
+        /* profile card shown after register */
+        .profile-strip { display:none; background:rgba(50,158,117,.07); border:1px solid rgba(50,158,117,.2); border-radius:24px; padding:1rem 1.4rem; margin-top:1rem; flex-wrap:wrap; gap:.8rem; align-items:center; }
+        .profile-strip.show { display:flex; }
+        .profile-chip { background:rgba(255,255,255,.7); border:1px solid rgba(180,215,195,.7); border-radius:30px; padding:.35rem .95rem; font-size:.82rem; color:var(--td); display:flex; align-items:center; gap:6px; font-weight:500; }
+        .profile-chip i { color:var(--gm); font-size:.78rem; }
+
+        /* ── STATS ROW ── */
+        .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.8rem; }
+        .stat-card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:24px; padding:1.1rem 1.3rem; border:1px solid var(--gb); box-shadow:0 10px 22px -14px var(--sd); text-align:center; transition:.2s; }
+        .stat-card:hover { transform:translateY(-3px); background:rgba(255,255,255,.68); }
+        .stat-num { font-family:'Playfair Display',serif; font-size:2rem; font-weight:500; color:var(--gm); }
+        .stat-desc { font-size:.78rem; color:var(--tm); font-weight:400; margin-top:.15rem; }
+
+        /* ── FILTERS ── */
+        .filter-row { display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1.2rem; }
+        .chip { background:rgba(255,255,255,.6); border:1px solid rgba(180,215,195,.7); padding:.4rem 1rem; border-radius:30px; font-size:.82rem; font-weight:500; cursor:pointer; color:var(--td); transition:.18s; display:flex; align-items:center; gap:5px; user-select:none; }
+        .chip:hover { background:rgba(255,255,255,.85); transform:translateY(-1px); }
+        .chip.active { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; border-color:transparent; box-shadow:0 6px 14px -6px #1c6048; }
+
+        /* ── SEARCH BAR ── */
+        .search-row { display:flex; gap:.8rem; margin-bottom:1.6rem; flex-wrap:wrap; }
+        .search-row input, .search-row select { padding:.78rem 1.2rem; background:rgba(255,255,255,.7); border:1px solid rgba(180,210,190,.8); border-radius:30px; font-size:.88rem; font-family:'DM Sans',sans-serif; outline:none; color:var(--td); transition:.2s; flex:1; min-width:140px; }
+        .search-row input:focus, .search-row select:focus { background:white; box-shadow:0 0 0 3px rgba(50,150,110,.2); border-color:#4caa83; }
+
+        /* ── JOBS GRID ── */
+        .jobs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.2rem; }
+
+        /* ── JOB CARD ── */
+        .job-card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:var(--r28); padding:1.4rem; border:1px solid var(--gb); box-shadow:0 12px 26px -16px var(--sd); transition:.22s; display:flex; flex-direction:column; gap:.75rem; position:relative; overflow:hidden; animation:cardIn .45s ease-out both; }
+        @keyframes cardIn { from{opacity:0;transform:translateY(10px) scale(.97)} to{opacity:1;transform:none} }
+        .job-card:hover { transform:translateY(-5px); background:rgba(255,255,255,.7); box-shadow:0 22px 38px -16px rgba(20,80,55,.22); }
+
+        .jcard-top { display:flex; justify-content:space-between; align-items:flex-start; }
+        .cat-badge { font-size:.72rem; font-weight:700; color:white; padding:.25rem .75rem; border-radius:20px; display:flex; align-items:center; gap:4px; flex-shrink:0; }
+        .bookmark-btn { background:rgba(255,255,255,.7); border:1px solid rgba(180,215,195,.7); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--tm); font-size:.85rem; transition:.18s; flex-shrink:0; }
+        .bookmark-btn:hover { background:rgba(50,158,117,.15); color:var(--gm); }
+        .bookmark-btn.saved { background:rgba(50,158,117,.15); color:var(--gm); border-color:rgba(50,158,117,.35); }
+
+        .job-title { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:500; color:var(--td); line-height:1.3; }
+        .job-company { font-size:.82rem; color:var(--tm); display:flex; align-items:center; gap:5px; font-weight:300; }
+
+        .job-metas { display:flex; flex-direction:column; gap:.35rem; }
+        .jm { font-size:.8rem; color:var(--ts); display:flex; align-items:center; gap:7px; }
+        .jm i { color:var(--gl); width:14px; font-size:.75rem; }
+
+        /* salary bar */
+        .salary-row { display:flex; align-items:center; gap:.7rem; }
+        .salary-val { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:500; color:var(--gm); }
+        .salary-sub { font-size:.75rem; color:var(--tm); font-weight:300; }
+        .salary-bar-wrap { flex:1; height:5px; background:rgba(50,158,117,.15); border-radius:10px; overflow:hidden; }
+        .salary-bar { height:100%; background:linear-gradient(90deg,#329e75,#197a59); border-radius:10px; transition:width .8s ease; }
+
+        .jcard-footer { display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:.75rem; border-top:1px solid rgba(50,158,117,.12); }
+        .jtype-pill { background:rgba(50,158,117,.1); color:var(--gm); border:1px solid rgba(50,158,117,.2); padding:.25rem .8rem; border-radius:20px; font-size:.74rem; font-weight:600; }
+        .applied-pill { background:rgba(50,158,117,.15); color:var(--gm); border:1px solid rgba(50,158,117,.3); padding:.3rem .9rem; border-radius:20px; font-size:.78rem; font-weight:600; display:flex; align-items:center; gap:5px; }
+
+        .apply-btn { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; border:none; padding:.42rem 1.1rem; border-radius:30px; font-size:.8rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 6px 14px -6px #1c6048; transition:.15s; }
+        .apply-btn:hover { background:linear-gradient(105deg,#249d76,#17855f); transform:translateY(-2px); box-shadow:0 10px 18px -6px #1c6048; }
+
+        /* ── MY APPLICATIONS PANEL ── */
+        .tracker-card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:var(--r36); padding:1.6rem 2rem; border:1px solid var(--gb); box-shadow:0 16px 36px -18px #1c6048,inset 0 1px 2px white; margin-top:1.8rem; display:none; }
+        .tracker-card.show { display:block; }
+        .tracker-list { display:flex; flex-direction:column; gap:.7rem; margin-top:1rem; }
+        .tracker-item { background:rgba(255,255,255,.65); border:1px solid rgba(180,215,195,.6); border-radius:24px; padding:.85rem 1.2rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+        .ti-icon { width:36px; height:36px; border-radius:50%; background:rgba(50,158,117,.12); display:flex; align-items:center; justify-content:center; color:var(--gm); font-size:.9rem; flex-shrink:0; }
+        .ti-info { flex:1; }
+        .ti-title { font-weight:600; color:var(--td); font-size:.88rem; }
+        .ti-meta  { font-size:.77rem; color:var(--tm); font-weight:300; }
+        .ti-status { background:rgba(50,158,117,.12); color:var(--gm); border:1px solid rgba(50,158,117,.25); padding:.22rem .75rem; border-radius:20px; font-size:.72rem; font-weight:700; white-space:nowrap; }
+        .ti-time { font-size:.72rem; color:var(--ts); white-space:nowrap; }
+
+        /* ── MODAL ── */
+        .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(6px); z-index:1000; display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:.25s; }
+        .modal-overlay.show { visibility:visible; opacity:1; }
+        .modal-box { background:rgba(242,252,247,.97); backdrop-filter:blur(20px); border-radius:var(--r36); padding:1.8rem 2rem; width:90%; max-width:580px; max-height:88vh; overflow-y:auto; border:1px solid var(--gb); box-shadow:0 50px 70px -20px rgba(0,0,0,.4); animation:modalIn .35s cubic-bezier(.2,.9,.3,1.1); }
+        @keyframes modalIn { from{opacity:0;transform:scale(.9) translateY(20px)} to{opacity:1;transform:none} }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; padding-bottom:.9rem; border-bottom:1px solid rgba(50,158,117,.2); margin-bottom:1.2rem; }
+        .modal-header h2 { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--td); display:flex; align-items:center; gap:9px; }
+        .modal-header h2 i { color:var(--gm); }
+        .modal-close { background:rgba(255,255,255,.7); border:1px solid rgba(180,215,195,.7); width:36px; height:36px; border-radius:50%; font-size:1.1rem; cursor:pointer; color:var(--td); display:flex; align-items:center; justify-content:center; transition:.15s; }
+        .modal-close:hover { background:#e11d48; color:white; border-color:#e11d48; }
+
+        .email-preview { background:rgba(255,255,255,.6); border:1px solid rgba(180,215,195,.5); border-radius:22px; padding:1.3rem 1.5rem; font-size:.85rem; color:var(--ts); line-height:1.7; }
+        .email-preview h3 { font-family:'Playfair Display',serif; font-size:1rem; color:var(--td); margin-bottom:.5rem; }
+        .email-preview .ep-row { display:flex; gap:.4rem; flex-wrap:wrap; margin-bottom:.3rem; }
+        .ep-key { font-weight:600; color:var(--td); white-space:nowrap; }
+        .email-preview hr { border:none; border-top:1px solid rgba(50,158,117,.15); margin:.8rem 0; }
+        .ep-details { background:rgba(50,158,117,.06); border-left:3px solid var(--gl); border-radius:0 16px 16px 0; padding:.8rem 1rem; margin:.8rem 0; }
+        .ep-details p { margin-bottom:.3rem; }
+
+        .send-btn { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; border:none; padding:.9rem 1.5rem; border-radius:60px; font-size:1rem; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; width:100%; margin-top:1.2rem; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 16px 26px -16px #1c6048,0 3px 0 0 #a2eed5 inset; transition:.15s; }
+        .send-btn:hover { background:linear-gradient(105deg,#249d76,#17855f); transform:translateY(-2px); }
+        .send-btn:disabled { background:linear-gradient(105deg,#8ab8a8,#6e9e8c); transform:none; box-shadow:none; cursor:not-allowed; }
+
+        /* ── TOAST ── */
+        .toast { position:fixed; top:1.6rem; right:1.6rem; padding:.85rem 1.5rem; border-radius:60px; display:flex; align-items:center; gap:10px; z-index:2000; font-weight:500; font-size:.9rem; border:1px solid rgba(255,255,255,.35); animation:toastIn .45s cubic-bezier(.68,-.55,.265,1.55); font-family:'DM Sans',sans-serif; box-shadow:0 20px 40px -15px rgba(0,0,0,.25); backdrop-filter:blur(8px); }
+        .toast.success { background:linear-gradient(135deg,#1c8864ee,#126a4aee); color:white; }
+        .toast.error   { background:linear-gradient(135deg,#e53e3eee,#c53030ee); color:white; }
+        .toast .tc { background:rgba(255,255,255,.2); border:none; color:white; width:26px; height:26px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.9rem; }
+        @keyframes toastIn { from{transform:translateX(120%) scale(.8);opacity:0} to{transform:none;opacity:1} }
+        @keyframes toastOut{ from{transform:none;opacity:1} to{transform:translateX(120%);opacity:0} }
+
+        /* ── FOOTER ── */
+        .footer-note { text-align:center; color:var(--tm); padding:.9rem 2rem; background:rgba(255,255,255,.3); border-radius:60px; font-size:.84rem; font-weight:300; margin-top:1.8rem; }
+
+        /* ── EMPTY STATE ── */
+        .empty { grid-column:1/-1; text-align:center; padding:3rem; color:var(--tm); font-size:.95rem; }
+        .empty i { font-size:2.5rem; color:var(--gl); display:block; margin-bottom:.7rem; opacity:.5; }
+
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-thumb { background:rgba(50,158,117,.35); border-radius:10px; }
+
+        @media(max-width:768px){
+            .stats-row { grid-template-columns:repeat(2,1fr); }
+            .jobs-grid  { grid-template-columns:1fr; }
+            .search-row { flex-direction:column; }
+            .modal-box  { padding:1.4rem 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="glass-case">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="logo"><i class="fas fa-briefcase"></i> jobs·ethereal</div>
+        <div class="top-right">
+            <div class="date-pill"><i class="far fa-calendar-alt"></i><span id="dateTxt"></span></div>
+            <div class="profile-wrap" id="profileWrap">
+                <div class="profile-trigger" id="profileTrigger" onclick="toggleDropdown()">
+                    <i class="fas fa-user-circle" style="color:#1f8a64;"></i>
+                    <span id="rollTxt">—</span>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dd-header">
+                        <div class="dd-roll" id="ddRoll">—</div>
+                        <div class="dd-sub">Logged in · StudentHub</div>
+                    </div>
+                    <a class="dd-item" href="home.html" id="ddHome"><i class="fas fa-file-pdf"></i> PDFs &amp; Videos</a>
+                    <a class="dd-item" href="recycling.html" id="ddRecycle"><i class="fas fa-recycle"></i> Recycling</a>
+                    <a class="dd-item" href="jobs.html" id="ddJobs"><i class="fas fa-briefcase"></i> Jobs</a>
+                    <a class="dd-item" href="feedback.html" id="ddFeedback"><i class="fas fa-comment-dots"></i> Feedback</a>
+                    <a class="dd-item" href="projects.html" id="ddProjects"><i class="fas fa-rocket"></i> Projects</a>
+                    <div class="dd-divider"></div>
+                    <div class="dd-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="nav-menu" id="navMenu"></div>
+
+    <!-- REGISTRATION CARD -->
+    <div class="reg-card">
+        <div class="sec-label"><i class="fas fa-user-graduate"></i> Student Registration</div>
+        <div class="reg-grid">
+            <div class="fg"><label><i class="fas fa-id-card"></i> Roll Number *</label><input type="text" id="rollNumber" placeholder="e.g. 21CSE047"></div>
+            <div class="fg"><label><i class="fas fa-user"></i> Full Name *</label><input type="text" id="studentName" placeholder="Your full name"></div>
+            <div class="fg"><label><i class="fas fa-envelope"></i> Email *</label><input type="email" id="studentEmail" placeholder="you@example.com"></div>
+            <div class="fg"><label><i class="fas fa-mobile-alt"></i> Mobile *</label><input type="tel" id="mobileNumber" placeholder="10-digit number"></div>
+            <div class="fg"><label><i class="fas fa-layer-group"></i> Preferred Category</label>
+                <select id="interestedCategory">
+                    <option value="tutoring">📚 Tutoring & Teaching</option>
+                    <option value="food">🍕 Food & Beverage</option>
+                    <option value="delivery">🚴 Delivery</option>
+                    <option value="campus">🏫 Campus Jobs</option>
+                    <option value="retail">🛍️ Retail</option>
+                    <option value="it">💻 IT & Technical</option>
+                    <option value="creative">🎨 Creative</option>
+                    <option value="admin">🏢 Admin</option>
+                </select>
+            </div>
+            <button class="reg-btn" onclick="registerStudent()"><i class="fas fa-rocket"></i> Register & Browse Jobs</button>
+        </div>
+        <div class="profile-strip" id="profileStrip"></div>
+    </div>
+
+    <!-- STATS ROW (hidden until registered) -->
+    <div class="stats-row" id="statsRow" style="display:none;">
+        <div class="stat-card"><div class="stat-num" id="sTotal">12</div><div class="stat-desc">Total Jobs</div></div>
+        <div class="stat-card"><div class="stat-num" id="sCat">0</div><div class="stat-desc">In Your Category</div></div>
+        <div class="stat-card"><div class="stat-num" id="sApplied">0</div><div class="stat-desc">Applied</div></div>
+        <div class="stat-card"><div class="stat-num" id="sSaved">0</div><div class="stat-desc">Bookmarked</div></div>
+    </div>
+
+    <!-- JOBS SECTION (hidden until registered) -->
+    <div id="jobSection" style="display:none;">
+        <div class="sec-label"><i class="fas fa-search"></i> Browse Opportunities</div>
+
+        <!-- CATEGORY CHIPS -->
+        <div class="filter-row" id="categoryFilters"></div>
+
+        <!-- SEARCH + SALARY FILTER -->
+        <div class="search-row">
+            <input type="text" id="searchInput" placeholder="🔍  Search by title or company…" oninput="renderJobs()">
+            <select id="salaryFilter" onchange="renderJobs()">
+                <option value="all">💰 All Salaries</option>
+                <option value="0-150">Under ₹150/hr</option>
+                <option value="150-200">₹150 – 200/hr</option>
+                <option value="200-250">₹200 – 250/hr</option>
+                <option value="250+">₹250+/hr</option>
+            </select>
+            <select id="typeFilter" onchange="renderJobs()">
+                <option value="all">🕐 All Types</option>
+                <option value="Part Time">Part Time</option>
+                <option value="Flexible">Flexible</option>
+                <option value="Internship">Internship</option>
+            </select>
+        </div>
+
+        <div class="jobs-grid" id="jobsGrid"></div>
+    </div>
+
+    <!-- MY APPLICATIONS TRACKER -->
+    <div class="tracker-card" id="trackerCard">
+        <div class="sec-label"><i class="fas fa-clipboard-list"></i> My Applications</div>
+        <div class="tracker-list" id="trackerList"></div>
+    </div>
+
+    <div class="footer-note" id="footerNote" style="display:none;">
+        <i class="fas fa-leaf"></i> &nbsp;Register once · apply to any job · track your applications below
+    </div>
+
+</div><!-- /glass-case -->
+
+<!-- APPLICATION CONFIRMATION MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2><i class="fas fa-envelope-open-text"></i> Application Confirmation</h2>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="email-preview" id="emailPreview"></div>
+        <button class="send-btn" id="sendBtn" onclick="confirmApply()">
+            <i class="fas fa-paper-plane"></i> Confirm & Send Application
+        </button>
+    </div>
+</div>
+
+<script>
+(function(){
+
+/* ════════════ DATA ════════════ */
+const CATS = {
+    tutoring:{ name:'Tutoring',  color:'#d97706', icon:'fa-chalkboard-teacher' },
+    food:    { name:'Food',      color:'#e53e3e', icon:'fa-utensils' },
+    delivery:{ name:'Delivery',  color:'#3b82f6', icon:'fa-bicycle' },
+    campus:  { name:'Campus',    color:'#197a59', icon:'fa-university' },
+    retail:  { name:'Retail',    color:'#7c3aed', icon:'fa-shopping-bag' },
+    it:      { name:'IT',        color:'#db2777', icon:'fa-laptop-code' },
+    creative:{ name:'Creative',  color:'#0891b2', icon:'fa-paint-brush' },
+    admin:   { name:'Admin',     color:'#f97316', icon:'fa-building' }
+};
+
+const JOBS = [
+    { id:1,  title:'Mathematics Tutor',              company:'Khan Academy',       location:'Near Campus',    category:'tutoring', type:'Part Time',  salary:250, hours:'2–3 hrs/day',  schedule:'Flexible timings',    description:'Help B.Tech students crack Maths fundamentals and exam prep.' },
+    { id:2,  title:'Physics & Chemistry Tutor',      company:'Brilliant Tutorials',location:'City Center',    category:'tutoring', type:'Part Time',  salary:280, hours:'2 hrs/day',   schedule:'Evening classes',     description:'Teach 11th & 12th board students, strong concepts required.' },
+    { id:3,  title:'English Communication Coach',    company:'SpeakWell Academy',  location:'Online/Campus',  category:'tutoring', type:'Flexible',   salary:220, hours:'1–2 hrs/day', schedule:'Own availability',    description:'Help students improve spoken English and presentation skills.' },
+    { id:4,  title:'Café Assistant',                 company:'Starbucks',          location:'Student Café',   category:'food',     type:'Part Time',  salary:180, hours:'4–6 hrs/day', schedule:'Evenings & Weekends', description:'Assist baristas, manage orders, maintain cleanliness.' },
+    { id:5,  title:'Restaurant Server',              company:'Pizza Hut',          location:'Downtown',       category:'food',     type:'Part Time',  salary:200, hours:'5 hrs/day',   schedule:'Flexible shifts',     description:'Serve tables, take orders, ensure customer satisfaction.' },
+    { id:6,  title:'Delivery Partner',               company:'Zomato',             location:'Flexible',       category:'delivery', type:'Flexible',   salary:220, hours:'Own hours',    schedule:'Self-managed',        description:'Food delivery using own bike. Earn per order + bonus.' },
+    { id:7,  title:'Package Delivery Executive',     company:'Amazon Flex',        location:'City Wide',      category:'delivery', type:'Flexible',   salary:250, hours:'3–6 hrs/day', schedule:'Choose your blocks',  description:'Deliver Amazon packages in flexible time slots.' },
+    { id:8,  title:'Library Assistant',              company:'Central Library',    location:'On Campus',      category:'campus',   type:'Part Time',  salary:150, hours:'4 hrs/day',   schedule:'Mon–Fri 4–8 pm',      description:'Manage book lending, catalogue updates, student queries.' },
+    { id:9,  title:'CS Lab Assistant',               company:'Engineering Dept',   location:'Campus Lab',     category:'campus',   type:'Part Time',  salary:200, hours:'3 hrs/day',   schedule:'Flexible',            description:'Help students with lab exercises, maintain equipment.' },
+    { id:10, title:'Sales Floor Assistant',          company:'Nike Store',         location:'City Mall',      category:'retail',   type:'Part Time',  salary:190, hours:'5 hrs/day',   schedule:'Weekends',            description:'Assist customers, manage stock, process sales.' },
+    { id:11, title:'Cashier',                        company:'Reliance Fresh',     location:'Near Campus',    category:'retail',   type:'Part Time',  salary:170, hours:'4 hrs/day',   schedule:'Evening shifts',      description:'Handle billing, cash management, customer service.' },
+    { id:12, title:'Web Developer Intern',           company:'TechStart',          location:'Remote',         category:'it',       type:'Internship', salary:350, hours:'3–4 hrs/day', schedule:'Flexible',            description:'Build React components and REST APIs. Good stipend + certificate.' },
+    { id:13, title:'Data Entry Operator',            company:'DataSync Pvt Ltd',   location:'Remote',         category:'admin',    type:'Part Time',  salary:160, hours:'3 hrs/day',   schedule:'Morning shift',       description:'Accurate data entry into company ERP systems.' },
+    { id:14, title:'Graphic Design Assistant',       company:'Creative Hive',      location:'Remote',         category:'creative', type:'Part Time',  salary:260, hours:'3 hrs/day',   schedule:'Flexible',            description:'Create social media creatives, banners, infographics.' },
+    { id:15, title:'Video Editor Intern',            company:'YT Studio',          location:'Remote',         category:'creative', type:'Internship', salary:300, hours:'2–3 hrs/day', schedule:'Flexible',            description:'Edit short-form videos for YouTube channels. Good portfolio required.' },
+];
+
+const MAX_SALARY = Math.max(...JOBS.map(j => j.salary));
+
+/* ════════════ STATE ════════════ */
+let student     = null;
+let appliedIds  = [];
+let savedIds    = [];
+let activeCat   = 'all';
+let pendingJob  = null;
+const urlParams = new URLSearchParams(window.location.search);
+const urlRoll   = urlParams.get('roll') || localStorage.getItem('studentRoll') || '';
+const rollDisplay = urlRoll || '—';
+if (urlRoll) {
+    document.getElementById('rollNumber').value = urlRoll;
+    localStorage.setItem('studentRoll', urlRoll);
+}
+
+/* ── INIT ── */
+document.getElementById('rollTxt').textContent  = rollDisplay;
+document.getElementById('ddRoll').textContent   = rollDisplay;
+document.getElementById('dateTxt').textContent  = new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+['ddHome','ddRecycle','ddJobs','ddFeedback','ddProjects'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.href = el.getAttribute('href') + '?roll=' + encodeURIComponent(rollDisplay);
+});
+
+function toggleDropdown(){
+    document.getElementById('profileTrigger').classList.toggle('open');
+    document.getElementById('profileDropdown').classList.toggle('open');
+}
+window.toggleDropdown = toggleDropdown;
+document.addEventListener('click', function(e){
+    var wrap = document.getElementById('profileWrap');
+    if (wrap && !wrap.contains(e.target)){
+        document.getElementById('profileTrigger').classList.remove('open');
+        document.getElementById('profileDropdown').classList.remove('open');
+    }
+});
+window.logout = function(){ localStorage.removeItem('studentRoll'); window.location.href = 'login.html'; };
+buildNav();
+
+function buildNav(){
+    const items = [
+        {name:'📄 PDFs',   page:'home.html',      active:false},
+        {name:'♻️ Recycling',page:'recycling.html',active:false},
+        {name:'💼 Jobs',   page:'jobs.html',      active:true },
+        {name:'💬 Feedback',page:'feedback.html', active:false},
+        {name:'🚀 Projects',page:'projects.html', active:false}
+    ];
+    const r = urlRoll || (student ? student.roll : '');
+    document.getElementById('navMenu').innerHTML = '';
+    items.forEach(i=>{
+        const d = document.createElement('div'); d.className = 'nav-item'+(i.active?' active':'');
+        const a = document.createElement('a'); a.href = i.page+'?roll='+encodeURIComponent(r);
+        a.textContent = i.name; d.appendChild(a);
+        document.getElementById('navMenu').appendChild(d);
+    });
+}
+
+/* ════════════ REGISTER ════════════ */
+window.registerStudent = function(){
+    const roll   = document.getElementById('rollNumber').value.trim();
+    const name   = document.getElementById('studentName').value.trim();
+    const email  = document.getElementById('studentEmail').value.trim();
+    const mobile = document.getElementById('mobileNumber').value.trim();
+    const cat    = document.getElementById('interestedCategory').value;
+
+    if(!roll||!name)          return toast('Please enter roll number and name','error');
+    if(!email||!email.includes('@')) return toast('Please enter a valid email','error');
+    if(mobile.length < 10)    return toast('Enter a valid 10-digit mobile number','error');
+
+    student = {roll, name, email, mobile, category:cat};
+    document.getElementById('rollTxt').textContent = roll;
+    buildNav();
+
+    /* profile strip */
+    const strip = document.getElementById('profileStrip');
+    strip.innerHTML = [
+        `<div class="profile-chip"><i class="fas fa-id-card"></i> ${roll}</div>`,
+        `<div class="profile-chip"><i class="fas fa-user"></i> ${name}</div>`,
+        `<div class="profile-chip"><i class="fas fa-envelope"></i> ${email}</div>`,
+        `<div class="profile-chip"><i class="fas fa-mobile-alt"></i> ${mobile}</div>`,
+        `<div class="profile-chip"><i class="fas fa-layer-group"></i> ${CATS[cat].name}</div>`,
+    ].join('');
+    strip.classList.add('show');
+
+    document.getElementById('statsRow').style.display = 'grid';
+    document.getElementById('jobSection').style.display = 'block';
+    document.getElementById('footerNote').style.display = 'block';
+
+    buildCategoryChips();
+    updateStats();
+    renderJobs();
+    toast(`Welcome, ${name}! 🎉 Browse ${JOBS.length} opportunities.`,'success');
+};
+
+/* ════════════ CATEGORY CHIPS ════════════ */
+function buildCategoryChips(){
+    const counts = {};
+    JOBS.forEach(j=>{ counts[j.category]=(counts[j.category]||0)+1; });
+    let html = `<span class="chip active" onclick="setCat('all',this)"><i class="fas fa-th-large"></i> All (${JOBS.length})</span>`;
+    Object.entries(CATS).forEach(([k,v])=>{
+        html += `<span class="chip" onclick="setCat('${k}',this)"><i class="fas ${v.icon}"></i> ${v.name} (${counts[k]||0})</span>`;
+    });
+    document.getElementById('categoryFilters').innerHTML = html;
+}
+
+window.setCat = function(cat, el){
+    activeCat = cat;
+    document.querySelectorAll('.filter-row .chip').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    renderJobs();
+};
+
+/* ════════════ RENDER JOBS ════════════ */
+window.renderJobs = function(){
+    const search  = document.getElementById('searchInput').value.toLowerCase();
+    const salary  = document.getElementById('salaryFilter').value;
+    const type    = document.getElementById('typeFilter').value;
+
+    let list = JOBS.filter(j=>{
+        if(activeCat !== 'all' && j.category !== activeCat) return false;
+        if(search && !j.title.toLowerCase().includes(search) && !j.company.toLowerCase().includes(search)) return false;
+        if(type !== 'all' && j.type !== type) return false;
+        if(salary !== 'all'){
+            if(salary==='0-150'   && j.salary >  150) return false;
+            if(salary==='150-200' && (j.salary<=150||j.salary>200)) return false;
+            if(salary==='200-250' && (j.salary<=200||j.salary>250)) return false;
+            if(salary==='250+'    && j.salary <= 250) return false;
+        }
+        return true;
+    });
+
+    const grid = document.getElementById('jobsGrid');
+    if(!list.length){
+        grid.innerHTML = `<div class="empty"><i class="fas fa-search-minus"></i>No jobs match your filters.</div>`;
+        return;
+    }
+
+    grid.innerHTML = list.map((j,idx)=>{
+        const cat   = CATS[j.category];
+        const pct   = Math.round((j.salary/MAX_SALARY)*100);
+        const isApp = appliedIds.includes(j.id);
+        const isSav = savedIds.includes(j.id);
+        return `
+        <div class="job-card" style="animation-delay:${idx*0.04}s">
+            <div class="jcard-top">
+                <span class="cat-badge" style="background:${cat.color}"><i class="fas ${cat.icon}"></i> ${cat.name}</span>
+                <button class="bookmark-btn ${isSav?'saved':''}" onclick="toggleSave(${j.id},this)" title="${isSav?'Remove bookmark':'Bookmark'}">
+                    <i class="fa${isSav?'s':'r'} fa-bookmark"></i>
+                </button>
+            </div>
+            <div class="job-title">${j.title}</div>
+            <div class="job-company"><i class="fas fa-building" style="color:var(--gl);font-size:.78rem;"></i> ${j.company}</div>
+            <div class="job-metas">
+                <div class="jm"><i class="fas fa-map-marker-alt"></i>${j.location}</div>
+                <div class="jm"><i class="far fa-clock"></i>${j.hours} · ${j.schedule}</div>
+                <div class="jm"><i class="fas fa-info-circle"></i>${j.description}</div>
+            </div>
+            <div class="salary-row">
+                <div>
+                    <div class="salary-val">₹${j.salary}<span style="font-size:.9rem;color:var(--tm);font-family:'DM Sans'">/hr</span></div>
+                    <div class="salary-sub">estimated pay</div>
+                </div>
+                <div class="salary-bar-wrap"><div class="salary-bar" style="width:${pct}%"></div></div>
+            </div>
+            <div class="jcard-footer">
+                <span class="jtype-pill">${j.type}</span>
+                ${isApp
+                    ? `<span class="applied-pill"><i class="fas fa-check-circle"></i> Applied</span>`
+                    : `<button class="apply-btn" onclick="openApply(${j.id})"><i class="fas fa-paper-plane"></i> Apply Now</button>`}
+            </div>
+        </div>`;
+    }).join('');
+};
+
+/* ════════════ BOOKMARK ════════════ */
+window.toggleSave = function(id, btn){
+    if(!student) return toast('Register first to bookmark jobs','error');
+    const idx = savedIds.indexOf(id);
+    if(idx === -1){
+        savedIds.push(id);
+        btn.classList.add('saved');
+        btn.innerHTML = '<i class="fas fa-bookmark"></i>';
+        toast('Job bookmarked! 🔖','success');
+    } else {
+        savedIds.splice(idx,1);
+        btn.classList.remove('saved');
+        btn.innerHTML = '<i class="far fa-bookmark"></i>';
+        toast('Bookmark removed','success');
+    }
+    updateStats();
+};
+
+/* ════════════ APPLY ════════════ */
+window.openApply = function(id){
+    if(!student) return toast('Please register first','error');
+    if(appliedIds.includes(id)) return toast('You have already applied to this job','error');
+    pendingJob = JOBS.find(j => j.id === id);
+    if(!pendingJob) return;
+    const appId = `APP-${id}-${String(Date.now()).slice(-6)}`;
+    document.getElementById('emailPreview').innerHTML = `
+        <h3>📧 Application Email Preview</h3>
+        <div class="ep-row"><span class="ep-key">To:</span> ${student.email}</div>
+        <div class="ep-row"><span class="ep-key">Subject:</span> ✅ Application Received – ${pendingJob.title}</div>
+        <hr>
+        <p>Dear <strong>${student.name}</strong>,</p>
+        <p>Thank you for applying to <strong>${pendingJob.title}</strong> at <strong>${pendingJob.company}</strong>. Your application has been received and is under review.</p>
+        <div class="ep-details">
+            <p><span class="ep-key">Job Title:</span> ${pendingJob.title}</p>
+            <p><span class="ep-key">Company:</span> ${pendingJob.company}</p>
+            <p><span class="ep-key">Location:</span> ${pendingJob.location}</p>
+            <p><span class="ep-key">Pay:</span> ₹${pendingJob.salary}/hr (est.)</p>
+            <p><span class="ep-key">Application ID:</span> ${appId}</p>
+        </div>
+        <p><span class="ep-key">Your Details:</span><br>
+        Roll: ${student.roll} · Name: ${student.name} · Mobile: ${student.mobile}</p>
+        <hr>
+        <p style="font-size:.8rem;color:var(--ts)">The employer will respond within 2–3 business days. Track your application in the dashboard below.</p>
+        <p style="font-size:.8rem;color:var(--ts)">Best regards — <em>jobs·ethereal Team</em></p>
+    `;
+    document.getElementById('modalOverlay').classList.add('show');
+};
+
+window.confirmApply = function(){
+    if(!pendingJob||!student) return;
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+
+    /* backend call */
+    fetch('/job-enroll',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({roll:student.roll, job:pendingJob.title})})
+        .then(r=>r.json()).catch(()=>{});
+
+    setTimeout(()=>{
+        appliedIds.push(pendingJob.id);
+        addTrackerItem(pendingJob);
+        updateStats();
+        renderJobs();
+        closeModal();
+        toast(`✅ Application sent for ${pendingJob.title}! Good luck!`,'success');
+        pendingJob = null;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Confirm & Send Application';
+    }, 900);
+};
+
+window.closeModal = function(){
+    document.getElementById('modalOverlay').classList.remove('show');
+    pendingJob = null;
+};
+document.getElementById('modalOverlay').addEventListener('click', e=>{
+    if(e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+/* ════════════ TRACKER ════════════ */
+function addTrackerItem(job){
+    const card = document.getElementById('trackerCard');
+    card.classList.add('show');
+    const list = document.getElementById('trackerList');
+    const cat  = CATS[job.category];
+    const time = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    list.insertAdjacentHTML('afterbegin',`
+        <div class="tracker-item">
+            <div class="ti-icon" style="background:${cat.color}22;color:${cat.color}"><i class="fas ${cat.icon}"></i></div>
+            <div class="ti-info">
+                <div class="ti-title">${job.title}</div>
+                <div class="ti-meta">${job.company} · ${job.location}</div>
+            </div>
+            <span class="ti-status">Applied</span>
+            <span class="ti-time">Today ${time}</span>
+        </div>`);
+}
+
+/* ════════════ STATS ════════════ */
+function updateStats(){
+    document.getElementById('sTotal').textContent   = JOBS.length;
+    document.getElementById('sCat').textContent     = student ? JOBS.filter(j=>j.category===student.category).length : 0;
+    document.getElementById('sApplied').textContent = appliedIds.length;
+    document.getElementById('sSaved').textContent   = savedIds.length;
+}
+
+/* ════════════ TOAST ════════════ */
+function toast(msg, type='success'){
+    document.querySelectorAll('.toast').forEach(t=>t.remove());
+    const t = document.createElement('div');
+    t.className = 'toast '+type;
+    t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'}"></i><span>${msg}</span><button class="tc" onclick="this.parentElement.remove()">×</button>`;
+    document.body.appendChild(t);
+    setTimeout(()=>{ if(t.parentElement){ t.style.animation='toastOut .35s ease forwards'; setTimeout(()=>t.remove(),350); }}, 4500);
+}
+
+window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+
+})();
+</script>
+</body>
+</html>

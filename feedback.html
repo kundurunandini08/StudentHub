@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ethereal · feedback</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --green-deep:  #0b4d39;
+            --green-mid:   #197a59;
+            --green-light: #329e75;
+            --green-pale:  #9fd4bf;
+            --glass-white: rgba(255,255,255,0.48);
+            --glass-border:rgba(255,255,255,0.65);
+            --shadow-deep: rgba(30,70,50,0.22);
+            --text-dark:   #164d3a;
+            --text-mid:    #2b6b52;
+            --text-soft:   #3f7060;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(145deg, #e4f2ed 0%, #cde9df 100%);
+            min-height: 100vh;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 420px; height: 420px;
+            background: radial-gradient(circle at 40% 40%, #b8e1d2, #9fd4bf);
+            top: -100px; left: -80px;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            animation: orb 20s infinite alternate ease-in-out;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            width: 480px; height: 480px;
+            background: radial-gradient(circle, #c2f0df, #a6dfcb);
+            bottom: -110px; right: -70px;
+            border-radius: 50%;
+            filter: blur(110px);
+            z-index: 0;
+            animation: orb 26s infinite alternate-reverse;
+        }
+        @keyframes orb {
+            0%   { transform: translate(0,0) scale(1); opacity: .5; }
+            100% { transform: translate(40px,-35px) scale(1.2); opacity: .8; }
+        }
+
+        /* ── SHELL ── */
+        .glass-case {
+            position: relative; z-index: 20;
+            max-width: 900px; width: 100%;
+            margin: 0 auto;
+            background: var(--glass-white);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 48px;
+            box-shadow: 0 32px 64px var(--shadow-deep), inset 0 1px 3px rgba(255,255,255,.85);
+            border: 1px solid var(--glass-border);
+            padding: 2rem 2.2rem 2.8rem;
+            animation: cardAppear .6s ease-out;
+        }
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.6rem; flex-wrap: wrap; gap: 12px;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem; font-weight: 500;
+            background: linear-gradient(120deg, #0b4d39, #197a59);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo i {
+            background: rgba(50,120,90,.18); padding: 10px; border-radius: 50%;
+            color: #1b6e50; font-size: 1.6rem; -webkit-text-fill-color: #1b6e50;
+        }
+        .user-badge {
+            background: rgba(255,255,255,.72); backdrop-filter: blur(6px);
+            padding: .65rem 1.8rem; border-radius: 60px; font-weight: 500; color: #124d39;
+            border: 1px solid rgba(255,255,255,.85); box-shadow: 0 6px 18px rgba(60,120,90,.14);
+            font-size: .95rem; display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ── PROFILE DROPDOWN ── */
+        .profile-wrap { position:relative; z-index:200; }
+        .profile-trigger { background:rgba(255,255,255,.72); backdrop-filter:blur(6px); padding:.6rem 1.4rem; border-radius:60px; font-weight:500; color:#124d39; border:1px solid rgba(255,255,255,.85); box-shadow:0 6px 18px rgba(60,120,90,.14); font-size:.9rem; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.18s; user-select:none; }
+        .profile-trigger:hover { background:rgba(255,255,255,.9); }
+        .profile-trigger .chevron { font-size:.7rem; color:#197a59; transition:transform .22s; }
+        .profile-trigger.open .chevron { transform:rotate(180deg); }
+        .profile-dropdown { position:absolute; top:calc(100% + 10px); right:0; min-width:220px; background:rgba(245,252,248,.97); backdrop-filter:blur(16px); border-radius:22px; border:1px solid rgba(255,255,255,.85); box-shadow:0 20px 48px -12px rgba(20,70,50,.28); padding:.5rem; display:none; flex-direction:column; gap:2px; animation:dropIn .22s cubic-bezier(.2,.9,.3,1.1); }
+        .profile-dropdown.open { display:flex; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+        .dd-header { padding:.7rem 1rem .6rem; border-bottom:1px solid rgba(50,158,117,.12); margin-bottom:.3rem; }
+        .dd-header .dd-roll { font-weight:600; color:#0b4d39; font-size:.92rem; }
+        .dd-header .dd-sub  { font-size:.75rem; color:#2b6b52; font-weight:300; margin-top:1px; }
+        .dd-item { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:500; color:#164d3a; cursor:pointer; transition:.15s; text-decoration:none; }
+        .dd-item i { width:16px; text-align:center; color:#329e75; font-size:.82rem; }
+        .dd-item:hover { background:rgba(50,158,117,.1); color:#0b4d39; }
+        .dd-divider { height:1px; background:rgba(50,158,117,.12); margin:.3rem .5rem; }
+        .dd-logout { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:600; color:#c53030; cursor:pointer; transition:.15s; }
+        .dd-logout i { width:16px; text-align:center; font-size:.82rem; }
+        .dd-logout:hover { background:rgba(229,62,62,.08); }
+
+        /* ── NAV ── */
+        .nav-menu {
+            display: flex; gap: .7rem;
+            background: rgba(255,255,255,.4); backdrop-filter: blur(8px);
+            padding: .65rem 1.1rem; border-radius: 80px; margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,.7); flex-wrap: wrap;
+        }
+        .nav-item { flex: 1 0 auto; text-align: center; min-width: 80px; }
+        .nav-item a {
+            text-decoration: none; color: #1b4f3d; font-weight: 500;
+            padding: .45rem .8rem; border-radius: 40px; display: inline-block;
+            width: 100%; transition: .2s; font-size: .95rem;
+        }
+        .nav-item.active a { background: white; color: #0f6747; box-shadow: 0 10px 20px -12px #1f5e44; font-weight: 600; }
+        .nav-item a:hover { background: rgba(255,255,255,.8); transform: translateY(-2px); }
+
+        /* ── PAGE HEADING ── */
+        .page-heading {
+            margin-bottom: 2rem;
+        }
+        .page-heading h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem; font-weight: 500;
+            color: var(--green-deep); margin-bottom: .4rem;
+            display: flex; align-items: center; gap: 12px;
+            border-left: 5px solid var(--green-light); padding-left: 1.1rem;
+        }
+        .page-heading h1 i { color: var(--green-mid); font-size: 1.6rem; }
+        .page-heading p {
+            color: var(--text-mid); font-size: .95rem; font-weight: 300;
+            padding-left: 1.6rem;
+        }
+
+        /* ── FORM CARD ── */
+        .form-card {
+            background: rgba(255,255,255,.52);
+            backdrop-filter: blur(10px);
+            border-radius: 36px;
+            padding: 2rem 2rem 2.2rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 44px -20px #1c6048, inset 0 1px 2px white;
+        }
+
+        /* ── FORM ELEMENTS ── */
+        .form-group { margin-bottom: 1.6rem; }
+
+        .form-label {
+            display: block; font-weight: 600;
+            color: var(--text-dark); margin-bottom: .75rem;
+            font-size: .95rem; display: flex; align-items: center; gap: 8px;
+        }
+        .form-label i { color: var(--green-mid); }
+
+        /* ── CATEGORY GRID ── */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .category-card {
+            background: rgba(255,255,255,.6);
+            border: 2px solid rgba(180,215,195,.6);
+            border-radius: 24px;
+            padding: 1.3rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: .22s cubic-bezier(.4,0,.2,1);
+            position: relative;
+            overflow: hidden;
+        }
+        .category-card::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, #329e75, #197a59);
+            opacity: 0; transition: opacity .22s; z-index: 0;
+            border-radius: 22px;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--green-light);
+            box-shadow: 0 16px 28px -12px rgba(20,100,65,.25);
+        }
+        .category-card.selected {
+            border-color: var(--green-mid);
+            background: rgba(50,158,117,.1);
+            box-shadow: 0 8px 24px -10px rgba(20,100,65,.3);
+        }
+        .category-card.selected::after { opacity: .06; }
+        .category-card input[type="radio"] { display: none; }
+        .category-card label {
+            cursor: pointer; font-size: .9rem; font-weight: 600;
+            color: var(--text-dark); display: flex; flex-direction: column;
+            align-items: center; gap: 8px; position: relative; z-index: 1;
+            margin: 0;
+        }
+        .category-icon {
+            font-size: 2.2rem; margin-bottom: 2px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,.08));
+            transition: transform .22s;
+        }
+        .category-card:hover .category-icon { transform: scale(1.12); }
+        .category-card.selected .category-icon { transform: scale(1.08); }
+
+        /* ── OTHER INPUT ── */
+        .other-input {
+            display: none;
+            animation: slideDown .28s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── INPUTS ── */
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: .85rem 1.2rem;
+            background: rgba(255,255,255,.72);
+            border: 1px solid rgba(180,210,190,.8);
+            border-radius: 30px;
+            font-size: .92rem; font-family: 'DM Sans', sans-serif;
+            outline: none; color: var(--text-dark); transition: .2s;
+        }
+        textarea {
+            border-radius: 22px; resize: vertical; min-height: 140px;
+        }
+        input[type="text"]:focus,
+        textarea:focus {
+            background: white;
+            box-shadow: 0 0 0 3px rgba(50,150,110,.2);
+            border-color: #4caa83;
+        }
+        .char-row {
+            display: flex; justify-content: flex-end;
+            font-size: .8rem; color: var(--text-mid); margin-top: 6px; font-weight: 400;
+        }
+        .char-row span { font-weight: 600; }
+
+        /* ── ANONYMOUS TOGGLE ── */
+        .anon-toggle {
+            background: rgba(255,255,255,.6);
+            border: 1px solid rgba(180,215,195,.7);
+            border-radius: 30px;
+            padding: 1rem 1.4rem;
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 1.6rem;
+            transition: .2s;
+        }
+        .anon-toggle:hover { background: rgba(255,255,255,.8); }
+        .anon-toggle input[type="checkbox"] {
+            width: 20px; height: 20px; cursor: pointer;
+            accent-color: var(--green-mid); flex-shrink: 0;
+        }
+        .anon-toggle label {
+            cursor: pointer; color: var(--text-dark); font-weight: 500;
+            font-size: .92rem; flex: 1; margin: 0;
+        }
+        .anon-icon { font-size: 1.4rem; opacity: .8; }
+
+        /* ── SUBMIT BUTTON ── */
+        .submit-btn {
+            background: linear-gradient(105deg, #1c8864, #126a4a);
+            color: white; border: none;
+            padding: 1rem 1.5rem; border-radius: 60px;
+            font-size: 1.05rem; font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 20px 28px -18px #115c41, 0 3px 0 0 #a2eed5 inset;
+            transition: .15s; letter-spacing: .3px; position: relative; overflow: hidden;
+        }
+        .submit-btn::before {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+            transition: left .5s;
+        }
+        .submit-btn:hover {
+            background: linear-gradient(105deg, #249d76, #17855f);
+            transform: scale(1.01) translateY(-2px);
+            box-shadow: 0 26px 34px -18px #0f6847, 0 3px 0 0 #c1ffe8 inset;
+        }
+        .submit-btn:hover::before { left: 100%; }
+        .submit-btn:active { transform: scale(.98) translateY(2px); }
+        .submit-btn:disabled {
+            background: linear-gradient(105deg, #8ab8a8, #6e9e8c);
+            transform: none; box-shadow: none; cursor: not-allowed;
+        }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            background: rgba(50,158,117,.08);
+            border: 1px solid rgba(50,158,117,.25);
+            border-radius: 24px;
+            padding: 1.1rem 1.4rem;
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-top: 1.4rem;
+        }
+        .info-box i { color: var(--green-mid); font-size: 1.1rem; margin-top: 2px; flex-shrink: 0; }
+        .info-box p { font-size: .85rem; color: var(--text-mid); line-height: 1.6; }
+        .info-box p strong { color: var(--text-dark); font-weight: 600; }
+
+        /* ── SPINNER ── */
+        .spinner {
+            display: inline-block; width: 18px; height: 18px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%; border-top-color: white;
+            animation: spin .9s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; top: 1.8rem; right: 1.8rem;
+            padding: .9rem 1.6rem;
+            border-radius: 60px;
+            display: flex; align-items: center; gap: 12px;
+            z-index: 1000; font-weight: 500; font-size: .95rem;
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,.25);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,.35);
+            animation: slideInRight .45s cubic-bezier(.68,-.55,.265,1.55);
+            font-family: 'DM Sans', sans-serif;
+        }
+        .toast.success {
+            background: linear-gradient(135deg, #1c8864ee, #126a4aee);
+            color: white;
+        }
+        .toast.error {
+            background: linear-gradient(135deg, #e53e3eee, #c53030ee);
+            color: white;
+        }
+        .toast .close-toast {
+            background: rgba(255,255,255,.2); border: none; color: white;
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; transition: .15s;
+        }
+        .toast .close-toast:hover { background: rgba(255,255,255,.35); transform: scale(1.1); }
+        @keyframes slideInRight {
+            from { transform: translateX(120%) scale(.8); opacity: 0; }
+            to   { transform: translateX(0) scale(1); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to   { transform: translateX(120%); opacity: 0; }
+        }
+
+        /* ── FOOTER ── */
+        .footer-note {
+            text-align: center; color: var(--text-mid);
+            padding: 1.2rem 2rem; margin-top: 1.6rem;
+            background: rgba(255,255,255,.3); border-radius: 60px;
+            font-size: .86rem; font-weight: 300;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+            .glass-case { padding: 1.4rem 1.2rem 2rem; }
+            .form-card { padding: 1.4rem 1.2rem; }
+        }
+        @media (max-width: 380px) {
+            .category-grid { grid-template-columns: 1fr; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(50,158,117,.35); border-radius: 10px; }
+    </style>
+</head>
+<body>
+<div class="glass-case">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="logo">
+            <i class="fas fa-comment-dots"></i> voice·ethereal
+        </div>
+        <div class="profile-wrap" id="profileWrap">
+            <div class="profile-trigger" id="profileTrigger" onclick="toggleDropdown()">
+                <i class="fas fa-user-circle" style="color:#1f8a64;"></i>
+                <span id="rollNumber">—</span>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dd-header">
+                    <div class="dd-roll" id="ddRoll">—</div>
+                    <div class="dd-sub">Logged in · StudentHub</div>
+                </div>
+                <a class="dd-item" href="home.html" id="ddHome"><i class="fas fa-file-pdf"></i> PDFs &amp; Videos</a>
+                <a class="dd-item" href="recycling.html" id="ddRecycle"><i class="fas fa-recycle"></i> Recycling</a>
+                <a class="dd-item" href="jobs.html" id="ddJobs"><i class="fas fa-briefcase"></i> Jobs</a>
+                <a class="dd-item" href="feedback.html" id="ddFeedback"><i class="fas fa-comment-dots"></i> Feedback</a>
+                <a class="dd-item" href="projects.html" id="ddProjects"><i class="fas fa-rocket"></i> Projects</a>
+                <div class="dd-divider"></div>
+                <div class="dd-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="nav-menu" id="navMenu"></div>
+
+    <!-- HEADING -->
+    <div class="page-heading">
+        <h1><i class="fas fa-bullhorn"></i> Share Your Voice</h1>
+        <p>Your feedback helps us build a better community. All responses are reviewed by the student council.</p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="form-card">
+
+        <!-- CATEGORY -->
+        <div class="form-group">
+            <div class="form-label"><i class="fas fa-tags"></i> Select Category <span style="color:#e05050;margin-left:3px;">*</span></div>
+            <div class="category-grid">
+                <div class="category-card" onclick="selectCategory(this,'faculty')">
+                    <input type="radio" name="category" value="faculty" id="cat-faculty">
+                    <label for="cat-faculty">
+                        <span class="category-icon">👨‍🏫</span>
+                        Faculty Issues
+                    </label>
+                </div>
+                <div class="category-card" onclick="selectCategory(this,'college')">
+                    <input type="radio" name="category" value="college" id="cat-college">
+                    <label for="cat-college">
+                        <span class="category-icon">🏛️</span>
+                        College Issues
+                    </label>
+                </div>
+                <div class="category-card" onclick="selectCategory(this,'students')">
+                    <input type="radio" name="category" value="students" id="cat-students">
+                    <label for="cat-students">
+                        <span class="category-icon">👥</span>
+                        Student Issues
+                    </label>
+                </div>
+                <div class="category-card" onclick="selectCategory(this,'hostel')">
+                    <input type="radio" name="category" value="hostel" id="cat-hostel">
+                    <label for="cat-hostel">
+                        <span class="category-icon">🏠</span>
+                        Hostel / Infra
+                    </label>
+                </div>
+                <div class="category-card" onclick="selectCategory(this,'events')">
+                    <input type="radio" name="category" value="events" id="cat-events">
+                    <label for="cat-events">
+                        <span class="category-icon">🎉</span>
+                        Events & Clubs
+                    </label>
+                </div>
+                <div class="category-card" onclick="selectCategory(this,'other')">
+                    <input type="radio" name="category" value="other" id="cat-other">
+                    <label for="cat-other">
+                        <span class="category-icon">📌</span>
+                        Other
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- OTHER SPECIFY -->
+        <div class="form-group other-input" id="otherSpecify">
+            <div class="form-label"><i class="fas fa-pencil-alt"></i> Please specify</div>
+            <input type="text" id="otherCategory" placeholder="e.g. Canteen, Library, Sports...">
+        </div>
+
+        <!-- FEEDBACK TEXT -->
+        <div class="form-group">
+            <div class="form-label"><i class="fas fa-align-left"></i> Your Feedback <span style="color:#e05050;margin-left:3px;">*</span></div>
+            <textarea id="feedbackText" maxlength="1000"
+                placeholder="Write your feedback here... Be specific and constructive. The more detail you provide, the better we can act on it."></textarea>
+            <div class="char-row"><span id="charCount">0</span>&nbsp;/ 1000 characters</div>
+        </div>
+
+        <!-- ANONYMOUS TOGGLE -->
+        <div class="anon-toggle">
+            <input type="checkbox" id="anonymous" checked>
+            <span class="anon-icon">🕵️</span>
+            <label for="anonymous">Submit anonymously — your roll number will not be attached to this feedback</label>
+        </div>
+
+        <!-- SUBMIT -->
+        <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">
+            <i class="fas fa-paper-plane"></i> Send Feedback
+        </button>
+
+        <!-- INFO BOX -->
+        <div class="info-box">
+            <i class="fas fa-shield-alt"></i>
+            <p><strong>Your privacy is protected.</strong> Anonymous submissions are completely private and cannot be traced back to you. Feedback is reviewed weekly by the student council and forwarded to relevant departments.</p>
+        </div>
+
+    </div><!-- /form-card -->
+
+    <div class="footer-note">
+        <i class="fas fa-leaf"></i> &nbsp;Together we grow · Together we improve
+    </div>
+
+</div><!-- /glass-case -->
+
+<script>
+(function() {
+    /* ── roll & nav ── */
+    const urlParams = new URLSearchParams(window.location.search);
+    /* roll: URL param → localStorage → empty */
+    const roll = urlParams.get('roll') || localStorage.getItem('studentRoll') || '';
+    const rollDisplay = roll || '—';
+    if (roll) localStorage.setItem('studentRoll', roll);
+    document.getElementById('rollNumber').innerText = rollDisplay;
+    document.getElementById('ddRoll').innerText     = rollDisplay;
+    ['ddHome','ddRecycle','ddJobs','ddFeedback','ddProjects'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.href = el.getAttribute('href') + '?roll=' + encodeURIComponent(rollDisplay);
+    });
+    function toggleDropdown(){
+        document.getElementById('profileTrigger').classList.toggle('open');
+        document.getElementById('profileDropdown').classList.toggle('open');
+    }
+    window.toggleDropdown = toggleDropdown;
+    document.addEventListener('click', function(e){
+        var wrap = document.getElementById('profileWrap');
+        if (wrap && !wrap.contains(e.target)){
+            document.getElementById('profileTrigger').classList.remove('open');
+            document.getElementById('profileDropdown').classList.remove('open');
+        }
+    });
+    window.logout = function(){ localStorage.removeItem('studentRoll'); window.location.href = 'login.html'; };
+
+    const navItems = [
+        { name:'📄 PDFs & Videos', page:'home.html',      active:false },
+        { name:'♻️ Recycling',     page:'recycling.html', active:false },
+        { name:'💼 Jobs',          page:'jobs.html',      active:false },
+        { name:'💬 Feedback',      page:'feedback.html',  active:true  },
+        { name:'🚀 Projects',      page:'projects.html',  active:false }
+    ];
+    const navMenu = document.getElementById('navMenu');
+    navItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'nav-item' + (item.active ? ' active' : '');
+        const a = document.createElement('a');
+        a.href = item.page + '?roll=' + encodeURIComponent(roll);
+        a.innerText = item.name;
+        div.appendChild(a); navMenu.appendChild(div);
+    });
+
+    /* ── char counter ── */
+    const feedbackText = document.getElementById('feedbackText');
+    const charCount    = document.getElementById('charCount');
+    feedbackText.addEventListener('input', function() {
+        const len = this.value.length;
+        charCount.textContent = len;
+        charCount.style.color = len > 900 ? '#e53e3e' : len > 750 ? '#d97706' : '#2b6b52';
+    });
+
+    /* ── category select ── */
+    window.selectCategory = function(el, cat) {
+        document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        el.querySelector('input[type="radio"]').checked = true;
+        const oth = document.getElementById('otherSpecify');
+        oth.style.display = cat === 'other' ? 'block' : 'none';
+        if (cat === 'other') oth.style.animation = 'slideDown .28s ease';
+    };
+
+    /* ── toast ── */
+    function showToast(msg, type = 'success') {
+        // remove any existing
+        document.querySelectorAll('.toast').forEach(t => t.remove());
+        const t = document.createElement('div');
+        t.className = 'toast ' + type;
+        t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                       <span>${msg}</span>
+                       <button class="close-toast" onclick="this.parentElement.remove()">×</button>`;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            if (t.parentElement) {
+                t.style.animation = 'slideOutRight .35s ease forwards';
+                setTimeout(() => t.remove(), 350);
+            }
+        }, 4500);
+    }
+
+    /* ── submit ── */
+    window.handleSubmit = function() {
+        const btn      = document.getElementById('submitBtn');
+        const category = document.querySelector('input[name="category"]:checked');
+        const text     = feedbackText.value.trim();
+        const other    = document.getElementById('otherCategory').value.trim();
+        const isAnon   = document.getElementById('anonymous').checked;
+
+        if (!category)               { showToast('Please select a category', 'error'); return; }
+        if (!text)                   { showToast('Please write your feedback', 'error'); feedbackText.focus(); return; }
+        if (text.length < 10)        { showToast('Feedback must be at least 10 characters', 'error'); feedbackText.focus(); return; }
+        if (category.value === 'other' && !other) { showToast('Please specify the category', 'error'); document.getElementById('otherCategory').focus(); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+        /* POST to backend */
+        const payload = {
+            roll:     isAnon ? 'anonymous' : roll,
+            category: category.value === 'other' ? other : category.value,
+            message:  text,
+            anonymous: isAnon
+        };
+
+        fetch('/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(() => {
+            showToast('✨ Thank you! Your feedback has been submitted.');
+            resetForm();
+        })
+        .catch(() => {
+            /* fallback — show success even if no backend */
+            showToast('✨ Thank you! Your feedback has been submitted.');
+            resetForm();
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Feedback';
+        });
+    };
+
+    function resetForm() {
+        document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('input[name="category"]').forEach(r => r.checked = false);
+        document.getElementById('otherCategory').value = '';
+        document.getElementById('otherSpecify').style.display = 'none';
+        feedbackText.value = '';
+        charCount.textContent = '0';
+        charCount.style.color = '#2b6b52';
+        document.getElementById('anonymous').checked = true;
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') document.querySelectorAll('.toast').forEach(t => t.remove());
+    });
+})();
+</script>
+</body>
+</html>

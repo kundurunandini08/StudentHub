@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ethereal · recycle</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        :root {
+            --gd: #0b4d39; --gm: #197a59; --gl: #329e75; --gp: #9fd4bf;
+            --gw: rgba(255,255,255,0.48); --gb: rgba(255,255,255,0.65);
+            --sd: rgba(30,70,50,0.22); --td: #164d3a; --tm: #2b6b52; --ts: #3f7060;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(145deg, #e4f2ed 0%, #cde9df 100%);
+            min-height: 100vh;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed;
+            width: 420px; height: 420px;
+            background: radial-gradient(circle at 40% 40%, #b8e1d2, #9fd4bf);
+            top: -100px; left: -80px; border-radius: 50%;
+            filter: blur(90px); z-index: 0;
+            animation: orb 20s infinite alternate ease-in-out;
+        }
+        body::after {
+            content: ''; position: fixed;
+            width: 480px; height: 480px;
+            background: radial-gradient(circle, #c2f0df, #a6dfcb);
+            bottom: -110px; right: -70px; border-radius: 50%;
+            filter: blur(110px); z-index: 0;
+            animation: orb 26s infinite alternate-reverse;
+        }
+        @keyframes orb {
+            0%   { transform: translate(0,0) scale(1); opacity: .5; }
+            100% { transform: translate(40px,-35px) scale(1.2); opacity: .8; }
+        }
+
+        /* ── SHELL ── */
+        .glass-case {
+            position: relative; z-index: 20;
+            max-width: 1000px; width: 100%;
+            margin: 0 auto;
+            background: var(--gw);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 48px;
+            box-shadow: 0 32px 64px var(--sd), inset 0 1px 3px rgba(255,255,255,.85);
+            border: 1px solid var(--gb);
+            padding: 2rem 2.2rem 2.8rem;
+            animation: appear .6s ease-out;
+        }
+        @keyframes appear { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.6rem; flex-wrap: wrap; gap: 12px;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem; font-weight: 500;
+            background: linear-gradient(120deg, #0b4d39, #197a59);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo i { background: rgba(50,120,90,.18); padding: 10px; border-radius: 50%; color: #1b6e50; font-size: 1.6rem; -webkit-text-fill-color: #1b6e50; }
+        .user-badge {
+            background: rgba(255,255,255,.72); backdrop-filter: blur(6px);
+            padding: .65rem 1.8rem; border-radius: 60px; font-weight: 500; color: #124d39;
+            border: 1px solid rgba(255,255,255,.85); box-shadow: 0 6px 18px rgba(60,120,90,.14);
+            font-size: .95rem; display: flex; align-items: center; gap: 8px;
+        }
+        /* ── PROFILE DROPDOWN ── */
+        .profile-wrap { position:relative; z-index:200; }
+        .profile-trigger { background:rgba(255,255,255,.72); backdrop-filter:blur(6px); padding:.6rem 1.4rem; border-radius:60px; font-weight:500; color:#124d39; border:1px solid rgba(255,255,255,.85); box-shadow:0 6px 18px rgba(60,120,90,.14); font-size:.9rem; display:flex; align-items:center; gap:8px; cursor:pointer; transition:.18s; user-select:none; }
+        .profile-trigger:hover { background:rgba(255,255,255,.9); }
+        .profile-trigger .chevron { font-size:.7rem; color:#197a59; transition:transform .22s; }
+        .profile-trigger.open .chevron { transform:rotate(180deg); }
+        .profile-dropdown { position:absolute; top:calc(100% + 10px); right:0; min-width:220px; background:rgba(245,252,248,.97); backdrop-filter:blur(16px); border-radius:22px; border:1px solid rgba(255,255,255,.85); box-shadow:0 20px 48px -12px rgba(20,70,50,.28); padding:.5rem; display:none; flex-direction:column; gap:2px; animation:dropIn .22s cubic-bezier(.2,.9,.3,1.1); }
+        .profile-dropdown.open { display:flex; }
+        @keyframes dropIn { from{opacity:0;transform:translateY(-8px) scale(.97)} to{opacity:1;transform:none} }
+        .dd-header { padding:.7rem 1rem .6rem; border-bottom:1px solid rgba(50,158,117,.12); margin-bottom:.3rem; }
+        .dd-header .dd-roll { font-weight:600; color:#0b4d39; font-size:.92rem; }
+        .dd-header .dd-sub  { font-size:.75rem; color:#2b6b52; font-weight:300; margin-top:1px; }
+        .dd-item { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:500; color:#164d3a; cursor:pointer; transition:.15s; text-decoration:none; }
+        .dd-item i { width:16px; text-align:center; color:#329e75; font-size:.82rem; }
+        .dd-item:hover { background:rgba(50,158,117,.1); color:#0b4d39; }
+        .dd-divider { height:1px; background:rgba(50,158,117,.12); margin:.3rem .5rem; }
+        .dd-logout { display:flex; align-items:center; gap:10px; padding:.62rem 1rem; border-radius:14px; font-size:.88rem; font-weight:600; color:#c53030; cursor:pointer; transition:.15s; }
+        .dd-logout i { width:16px; text-align:center; font-size:.82rem; }
+        .dd-logout:hover { background:rgba(229,62,62,.08); }
+
+        /* ── NAV ── */
+        .nav-menu {
+            display: flex; gap: .7rem;
+            background: rgba(255,255,255,.4); backdrop-filter: blur(8px);
+            padding: .65rem 1.1rem; border-radius: 80px; margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,.7); flex-wrap: wrap;
+        }
+        .nav-item { flex: 1 0 auto; text-align: center; min-width: 80px; }
+        .nav-item a {
+            text-decoration: none; color: #1b4f3d; font-weight: 500;
+            padding: .45rem .8rem; border-radius: 40px; display: inline-block;
+            width: 100%; transition: .2s; font-size: .92rem;
+        }
+        .nav-item.active a { background: white; color: #0f6747; box-shadow: 0 10px 20px -12px #1f5e44; font-weight: 600; }
+        .nav-item a:hover { background: rgba(255,255,255,.8); transform: translateY(-2px); }
+
+        /* ── PAGE HEADING ── */
+        .page-heading { margin-bottom: 2rem; }
+        .page-heading h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem; font-weight: 500; color: var(--gd);
+            margin-bottom: .35rem;
+            display: flex; align-items: center; gap: 12px;
+            border-left: 5px solid var(--gl); padding-left: 1.1rem;
+        }
+        .page-heading h1 i { color: var(--gm); font-size: 1.6rem; }
+        .page-heading p { color: var(--tm); font-size: .95rem; font-weight: 300; padding-left: 1.6rem; }
+
+        /* ── COLLECTION CENTERS ── */
+        .centers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .center-card {
+            background: rgba(255,255,255,.52); backdrop-filter: blur(10px);
+            border-radius: 28px; padding: 1.4rem 1.1rem;
+            border: 1px solid var(--gb);
+            box-shadow: 0 14px 28px -14px var(--sd), inset 0 1px 2px white;
+            text-align: center; transition: .22s;
+            display: flex; flex-direction: column; align-items: center; gap: .5rem;
+        }
+        .center-card:hover { transform: translateY(-5px); background: rgba(255,255,255,.7); box-shadow: 0 22px 36px -14px rgba(20,80,55,.22); }
+        .center-icon {
+            width: 52px; height: 52px;
+            background: rgba(50,158,117,.12); border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: .3rem;
+            border: 1px solid rgba(50,158,117,.2);
+        }
+        .center-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 500; color: var(--td); }
+        .center-meta { font-size: .78rem; color: var(--tm); font-weight: 300; display: flex; align-items: center; gap: 5px; }
+        .center-meta i { color: var(--gl); font-size: .72rem; }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1rem; margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,.52); backdrop-filter: blur(10px);
+            border-radius: 26px; padding: 1.3rem 1.1rem;
+            border: 1px solid var(--gb);
+            box-shadow: 0 12px 24px -14px var(--sd);
+            text-align: center; transition: .22s;
+        }
+        .stat-card:hover { transform: translateY(-3px); background: rgba(255,255,255,.7); }
+        .stat-icon { font-size: 1.5rem; margin-bottom: .4rem; }
+        .stat-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem; font-weight: 500; color: var(--gm);
+            line-height: 1;
+        }
+        .stat-unit { font-size: .78rem; color: var(--tm); font-weight: 400; margin-top: .2rem; }
+        .stat-label { font-size: .82rem; color: var(--ts); margin-top: .3rem; font-weight: 300; }
+
+        /* stars */
+        .stars-row {
+            text-align: center; margin-bottom: 1.8rem;
+            font-size: 1.6rem; letter-spacing: 4px;
+            filter: drop-shadow(0 4px 8px #f1c40f55);
+            animation: starGlow 3s ease-in-out infinite alternate;
+            min-height: 2rem;
+        }
+        @keyframes starGlow {
+            from { filter: drop-shadow(0 3px 6px #f1c40f44); }
+            to   { filter: drop-shadow(0 6px 16px #f39c1288); }
+        }
+
+        /* ── GLASS CARD ── */
+        .g-card {
+            background: rgba(255,255,255,.52); backdrop-filter: blur(10px);
+            border-radius: 34px; padding: 1.8rem 2rem;
+            border: 1px solid var(--gb);
+            box-shadow: 0 20px 44px -20px #1c6048, inset 0 1px 2px white;
+            margin-bottom: 1.4rem; transition: .22s;
+        }
+        .g-card:hover { background: rgba(255,255,255,.65); }
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem; font-weight: 500; color: var(--td);
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 1.2rem;
+            border-left: 4px solid var(--gl); padding-left: .9rem;
+        }
+        .card-title i { color: var(--gm); }
+
+        /* ── INPUTS ── */
+        .input-row { display: flex; gap: .8rem; flex-wrap: wrap; align-items: center; }
+        input[type="number"], input[type="text"] {
+            flex: 1; min-width: 140px;
+            padding: .85rem 1.3rem;
+            background: rgba(255,255,255,.72);
+            border: 1px solid rgba(180,210,190,.8);
+            border-radius: 50px;
+            font-size: .92rem; font-family: 'DM Sans', sans-serif;
+            outline: none; color: var(--td); transition: .2s;
+        }
+        input[type="number"]:focus, input[type="text"]:focus {
+            background: white;
+            box-shadow: 0 0 0 3px rgba(50,150,110,.2);
+            border-color: #4caa83;
+        }
+        .g-btn {
+            background: linear-gradient(105deg, #1c8864, #126a4a);
+            color: white; border: none;
+            padding: .85rem 1.8rem; border-radius: 50px;
+            font-size: .92rem; font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 14px 24px -14px #1c6048, 0 3px 0 0 #a2eed5 inset;
+            transition: .15s; white-space: nowrap;
+        }
+        .g-btn:hover { background: linear-gradient(105deg, #249d76, #17855f); transform: translateY(-2px); box-shadow: 0 20px 28px -14px #1c6048, 0 3px 0 0 #c1ffe8 inset; }
+        .g-btn:active { transform: scale(.98) translateY(2px); }
+
+        /* feedback pills */
+        .msg-pill {
+            margin-top: .9rem;
+            background: rgba(50,158,117,.08); border: 1px solid rgba(50,158,117,.2);
+            border-radius: 30px; padding: .55rem 1.2rem;
+            font-size: .85rem; color: var(--tm); display: flex; align-items: center; gap: 8px;
+        }
+        .msg-pill i { color: var(--gl); }
+        .msg-pill.warn { background: rgba(255,190,50,.1); border-color: rgba(255,190,50,.3); color: #7a5c00; }
+        .msg-pill.warn i { color: #d4a017; }
+
+        /* ── MAP ── */
+        .map-wrap {
+            width: 100%; height: 260px;
+            border-radius: 22px; overflow: hidden;
+            border: 1px solid rgba(180,215,195,.6);
+            box-shadow: 0 10px 22px -12px var(--sd);
+            margin-top: 1.1rem; background: rgba(255,255,255,.4);
+        }
+        .map-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+        .map-status {
+            font-size: .85rem; color: var(--tm); margin: .7rem 0 0;
+            display: flex; align-items: center; gap: 7px; font-weight: 300;
+        }
+        .map-status i { color: var(--gl); }
+
+        /* ── CHART ── */
+        .chart-wrap {
+            background: rgba(255,255,255,.4); border-radius: 22px;
+            padding: 1rem; border: 1px solid rgba(180,215,195,.4);
+        }
+
+        /* ── PROGRESS BAR ── */
+        .progress-section { margin-top: .5rem; }
+        .progress-label { display: flex; justify-content: space-between; font-size: .8rem; color: var(--tm); margin-bottom: .4rem; font-weight: 400; }
+        .progress-track { height: 8px; background: rgba(50,158,117,.12); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #329e75, #197a59); border-radius: 10px; transition: width .8s ease; }
+
+        /* ── BADGES EARNED ── */
+        .badges-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+        .badge-chip {
+            background: rgba(255,255,255,.65); border: 1px solid var(--gb);
+            border-radius: 30px; padding: .35rem .9rem;
+            font-size: .8rem; color: var(--td); font-weight: 500;
+            display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 10px -4px var(--sd);
+        }
+        .badge-chip.locked { opacity: .35; filter: grayscale(1); }
+
+        /* ── FOOTER ── */
+        .footer-note {
+            text-align: center; color: var(--tm); padding: .9rem 2rem;
+            background: rgba(255,255,255,.3); border-radius: 60px;
+            font-size: .84rem; font-weight: 300; margin-top: 1.6rem;
+        }
+
+        /* glow animation for number updates */
+        @keyframes numGlow {
+            0%   { text-shadow: 0 0 4px #9fe6c0; }
+            50%  { text-shadow: 0 0 22px #c8fce0; }
+            100% { text-shadow: 0 0 4px #9fe6c0; }
+        }
+        .glow { animation: numGlow .6s ease; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(50,158,117,.35); border-radius: 10px; }
+
+        @media(max-width:600px){
+            .stats-row { grid-template-columns: repeat(2,1fr); }
+            .input-row { flex-direction: column; }
+            .g-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="glass-case">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="logo"><i class="fas fa-leaf"></i> recycle·ethereal</div>
+        <div class="profile-wrap" id="profileWrap">
+            <div class="profile-trigger" id="profileTrigger" onclick="toggleDropdown()">
+                <i class="fas fa-user-circle" style="color:#1f8a64;"></i>
+                <span id="rollDisplay">—</span>
+                <i class="fas fa-chevron-down chevron"></i>
+            </div>
+            <div class="profile-dropdown" id="profileDropdown">
+                <div class="dd-header">
+                    <div class="dd-roll" id="ddRoll">—</div>
+                    <div class="dd-sub">Logged in · StudentHub</div>
+                </div>
+                <a class="dd-item" href="home.html" id="ddHome"><i class="fas fa-file-pdf"></i> PDFs &amp; Videos</a>
+                <a class="dd-item" href="recycling.html" id="ddRecycle"><i class="fas fa-recycle"></i> Recycling</a>
+                <a class="dd-item" href="jobs.html" id="ddJobs"><i class="fas fa-briefcase"></i> Jobs</a>
+                <a class="dd-item" href="feedback.html" id="ddFeedback"><i class="fas fa-comment-dots"></i> Feedback</a>
+                <a class="dd-item" href="projects.html" id="ddProjects"><i class="fas fa-rocket"></i> Projects</a>
+                <div class="dd-divider"></div>
+                <div class="dd-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="nav-menu" id="navMenu"></div>
+
+    <!-- PAGE HEADING -->
+    <div class="page-heading">
+        <h1><i class="fas fa-recycle"></i> Paper Recycling</h1>
+        <p>Drop your paper waste · earn points · track your green footprint</p>
+    </div>
+
+    <!-- COLLECTION CENTERS -->
+    <div class="centers-grid">
+        <div class="center-card">
+            <div class="center-icon">📚</div>
+            <div class="center-name">Library</div>
+            <div class="center-meta"><i class="far fa-clock"></i> Open 24/7</div>
+            <div class="center-meta"><i class="fas fa-map-pin"></i> Main Campus</div>
+        </div>
+        <div class="center-card">
+            <div class="center-icon">🍽️</div>
+            <div class="center-name">Canteen</div>
+            <div class="center-meta"><i class="far fa-clock"></i> 8 AM – 8 PM</div>
+            <div class="center-meta"><i class="fas fa-map-pin"></i> Food Court</div>
+        </div>
+        <div class="center-card">
+            <div class="center-icon">🏠</div>
+            <div class="center-name">Hostel</div>
+            <div class="center-meta"><i class="far fa-clock"></i> 6 PM – 9 PM</div>
+            <div class="center-meta"><i class="fas fa-map-pin"></i> Hostel Gate</div>
+        </div>
+        <div class="center-card">
+            <div class="center-icon">🏫</div>
+            <div class="center-name">Dept. Block</div>
+            <div class="center-meta"><i class="far fa-clock"></i> 9 AM – 5 PM</div>
+            <div class="center-meta"><i class="fas fa-map-pin"></i> CSE Block</div>
+        </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">♻️</div>
+            <div class="stat-val" id="kgVal">0.0</div>
+            <div class="stat-unit">kg</div>
+            <div class="stat-label">Papers Recycled</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-val" id="pointsVal">0</div>
+            <div class="stat-unit">pts</div>
+            <div class="stat-label">Points Earned</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🌳</div>
+            <div class="stat-val" id="treesVal">0</div>
+            <div class="stat-unit">saved</div>
+            <div class="stat-label">Trees Equiv.</div>
+        </div>
+    </div>
+
+    <!-- PROGRESS TO NEXT BADGE -->
+    <div class="g-card">
+        <div class="card-title"><i class="fas fa-trophy"></i> Progress to Next Badge</div>
+        <div class="progress-section">
+            <div class="progress-label">
+                <span id="progressLabel">0 / 100 pts to Bronze</span>
+                <span id="progressPct">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+        <div class="badges-row" id="badgesRow">
+            <div class="badge-chip locked">🥉 Bronze — 100 pts</div>
+            <div class="badge-chip locked">🥈 Silver — 500 pts</div>
+            <div class="badge-chip locked">🥇 Gold — 1000 pts</div>
+            <div class="badge-chip locked">💎 Diamond — 5000 pts</div>
+        </div>
+    </div>
+
+    <!-- STARS -->
+    <div class="stars-row" id="starsRow">✨ Start recycling to earn stars</div>
+
+    <!-- RECYCLE FORM -->
+    <div class="g-card">
+        <div class="card-title"><i class="fas fa-feather-alt"></i> Submit Paper Weight</div>
+        <div class="input-row">
+            <input type="number" id="paperkg" placeholder="How many kg? e.g. 2.5" step="0.1" min="0.1">
+            <button class="g-btn" onclick="recycle()"><i class="fas fa-recycle"></i> Submit</button>
+        </div>
+        <div class="msg-pill" id="recycleMsg" style="display:none;">
+            <i class="fas fa-check-circle"></i> <span id="recycleMsgText"></span>
+        </div>
+    </div>
+
+    <!-- PICKUP REQUEST -->
+    <div class="g-card">
+        <div class="card-title"><i class="fas fa-truck"></i> Request Pickup</div>
+        <div class="input-row">
+            <input type="text" id="address" placeholder="Your address or landmark...">
+            <button class="g-btn" onclick="pickup()"><i class="fas fa-paper-plane"></i> Request</button>
+        </div>
+        <div class="msg-pill" id="pickupMsg" style="display:none;">
+            <i class="fas fa-map-marker-alt"></i> <span id="pickupMsgText"></span>
+        </div>
+        <div class="map-status" id="mapStatus" style="display:none;">
+            <i class="fas fa-circle-notch fa-spin"></i> <span id="mapStatusText">Locating...</span>
+        </div>
+        <div class="map-wrap" id="mapWrap" style="display:none;">
+            <iframe id="mapFrame" src="about:blank" title="map" allowfullscreen loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="g-card">
+        <div class="card-title"><i class="fas fa-chart-area"></i> Points Journey</div>
+        <div class="chart-wrap">
+            <canvas id="pointsChart"></canvas>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-seedling"></i> &nbsp;Every kilogram counts · soft recycling · elegant footprint
+    </div>
+
+</div><!-- /glass-case -->
+
+<script>
+(function(){
+
+    /* ── ROLL NUMBER: URL → localStorage → '—' ── */
+    var urlParams = new URLSearchParams(window.location.search);
+    var roll = urlParams.get('roll') || localStorage.getItem('studentRoll') || '';
+    var rollDisplay = roll || '—';
+    if (roll) localStorage.setItem('studentRoll', roll);
+    document.getElementById('rollDisplay').innerText = rollDisplay;
+    document.getElementById('ddRoll').innerText      = rollDisplay;
+    ['ddHome','ddRecycle','ddJobs','ddFeedback','ddProjects'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) el.href = el.getAttribute('href') + '?roll=' + encodeURIComponent(rollDisplay);
+    });
+
+    /* dropdown */
+    window.toggleDropdown = function(){
+        document.getElementById('profileTrigger').classList.toggle('open');
+        document.getElementById('profileDropdown').classList.toggle('open');
+    };
+    document.addEventListener('click', function(e){
+        var wrap = document.getElementById('profileWrap');
+        if (wrap && !wrap.contains(e.target)){
+            document.getElementById('profileTrigger').classList.remove('open');
+            document.getElementById('profileDropdown').classList.remove('open');
+        }
+    });
+    window.logout = function(){ localStorage.removeItem('studentRoll'); window.location.href = 'login.html'; };
+
+    /* ── NAV ── */
+    var navItems = [
+        { name:'📄 PDFs',        page:'home.html',      active:false },
+        { name:'♻️ Recycling',   page:'recycling.html', active:true  },
+        { name:'💼 Jobs',        page:'jobs.html',      active:false },
+        { name:'💬 Feedback',    page:'feedback.html',  active:false },
+        { name:'🚀 Projects',    page:'projects.html',  active:false }
+    ];
+    var navMenu = document.getElementById('navMenu');
+    navItems.forEach(function(item){
+        var div = document.createElement('div');
+        div.className = 'nav-item' + (item.active ? ' active' : '');
+        var a = document.createElement('a');
+        a.href = item.page + '?roll=' + encodeURIComponent(roll);
+        a.innerText = item.name;
+        div.appendChild(a);
+        navMenu.appendChild(div);
+    });
+
+    /* ── STATE ── */
+    var totalKg     = 0;
+    var totalPoints = 0;
+    var chartLabels = ['Start'];
+    var chartData   = [0];
+    var chart;
+
+    var BADGES = [
+        { label: '🥉 Bronze',  pts: 100  },
+        { label: '🥈 Silver',  pts: 500  },
+        { label: '🥇 Gold',    pts: 1000 },
+        { label: '💎 Diamond', pts: 5000 }
+    ];
+
+    /* ── CHART ── */
+    window.onload = function(){
+        var ctx = document.getElementById('pointsChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Points',
+                    data: chartData,
+                    tension: 0.4,
+                    backgroundColor: 'rgba(50,158,117,0.12)',
+                    borderColor: '#197a59',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#197a59',
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { labels: { color: '#164d3a', font: { family: 'DM Sans', size: 13 } } }
+                },
+                scales: {
+                    y: { grid: { color: 'rgba(50,158,117,.12)' }, ticks: { color: '#2b6b52', font: { family: 'DM Sans' } } },
+                    x: { grid: { display: false }, ticks: { color: '#2b6b52', font: { family: 'DM Sans' } } }
+                }
+            }
+        });
+    };
+
+    /* ── HELPERS ── */
+    function glow(id){
+        var el = document.getElementById(id);
+        el.classList.remove('glow');
+        void el.offsetWidth;
+        el.classList.add('glow');
+    }
+
+    function showMsg(id, textId, text, warn){
+        var el = document.getElementById(id);
+        var t  = document.getElementById(textId);
+        t.innerText = text;
+        el.style.display = 'flex';
+        if (warn) el.classList.add('warn'); else el.classList.remove('warn');
+    }
+
+    function updateStats(){
+        document.getElementById('kgVal').innerText     = totalKg.toFixed(1);
+        document.getElementById('pointsVal').innerText = Math.floor(totalPoints);
+        document.getElementById('treesVal').innerText  = (totalKg / 17).toFixed(2);
+        glow('kgVal'); glow('pointsVal'); glow('treesVal');
+        updateStars();
+        updateProgress();
+        updateBadges();
+    }
+
+    function updateStars(){
+        var count = Math.floor(totalPoints / 100);
+        var stars = document.getElementById('starsRow');
+        if (count === 0) {
+            stars.innerText = '✨ Start recycling to earn stars';
+        } else {
+            var s = '';
+            for (var i = 0; i < Math.min(count, 20); i++) s += '⭐';
+            stars.innerText = s;
+        }
+    }
+
+    function updateProgress(){
+        var next = null;
+        for (var i = 0; i < BADGES.length; i++){
+            if (totalPoints < BADGES[i].pts){ next = BADGES[i]; break; }
+        }
+        var fillEl = document.getElementById('progressFill');
+        var labelEl = document.getElementById('progressLabel');
+        var pctEl   = document.getElementById('progressPct');
+
+        if (!next) {
+            fillEl.style.width = '100%';
+            labelEl.innerText  = '💎 Diamond achieved!';
+            pctEl.innerText    = '100%';
+            return;
+        }
+        var prev = 0;
+        for (var j = 0; j < BADGES.length; j++){
+            if (BADGES[j].pts === next.pts && j > 0) prev = BADGES[j-1].pts;
+        }
+        var pct = Math.min(100, Math.round(((totalPoints - prev) / (next.pts - prev)) * 100));
+        fillEl.style.width = pct + '%';
+        labelEl.innerText  = Math.floor(totalPoints) + ' / ' + next.pts + ' pts to ' + next.label;
+        pctEl.innerText    = pct + '%';
+    }
+
+    function updateBadges(){
+        var chips = document.getElementById('badgesRow').querySelectorAll('.badge-chip');
+        BADGES.forEach(function(b, i){
+            if (totalPoints >= b.pts) chips[i].classList.remove('locked');
+            else chips[i].classList.add('locked');
+        });
+    }
+
+    /* ── RECYCLE ── */
+    window.recycle = function(){
+        var val = parseFloat(document.getElementById('paperkg').value);
+        if (isNaN(val) || val <= 0){
+            showMsg('recycleMsg','recycleMsgText','Please enter a positive number (e.g. 2.5)', true);
+            return;
+        }
+        totalKg     += val;
+        totalPoints += val * 10;
+        updateStats();
+
+        var earned = Math.floor(val * 10);
+        showMsg('recycleMsg','recycleMsgText',
+            'Thank you! +' + earned + ' points earned for ' + val.toFixed(1) + ' kg recycled 🌿');
+
+        chartLabels.push('+' + val + 'kg');
+        chartData.push(totalPoints);
+        if (chart) chart.update();
+
+        document.getElementById('paperkg').value = '';
+
+        /* backend */
+        recyclePages(roll, val);
+    };
+
+    /* ── PICKUP ── */
+    window.pickup = function(){
+        var addr = document.getElementById('address').value.trim();
+        if (!addr){
+            showMsg('pickupMsg','pickupMsgText','Please enter your address or landmark', true);
+            return;
+        }
+        showMsg('pickupMsg','pickupMsgText','Pickup request sent from "' + addr + '" ✅');
+
+        var statusEl = document.getElementById('mapStatus');
+        var statusTxt = document.getElementById('mapStatusText');
+        var mapWrap  = document.getElementById('mapWrap');
+        statusEl.style.display = 'flex';
+        statusTxt.innerText = 'Locating your position...';
+
+        if (navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(
+                function(pos){
+                    var lat = pos.coords.latitude;
+                    var lon = pos.coords.longitude;
+                    statusTxt.innerText = 'Driver will reach your location soon 🚚✨';
+                    document.getElementById('mapFrame').src =
+                        'https://maps.google.com/maps?q=' + lat + ',' + lon + '&z=17&output=embed';
+                    mapWrap.style.display = 'block';
+                },
+                function(){
+                    statusTxt.innerText = 'Location access denied — showing campus map';
+                    document.getElementById('mapFrame').src =
+                        'https://maps.google.com/maps?q=university+campus&z=14&output=embed';
+                    mapWrap.style.display = 'block';
+                }
+            );
+        } else {
+            statusTxt.innerText = 'Geolocation not supported by your browser';
+        }
+    };
+
+    /* ── BACKEND CALL ── */
+    function recyclePages(r, kgs){
+        fetch('/recycle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ roll: r, kgs: kgs })
+        })
+        .then(function(res){ return res.json(); })
+        .then(function(data){ console.log('Recycling saved:', data); })
+        .catch(function(err){ console.error('Error:', err); });
+    }
+
+})();
+</script>
+</body>
+</html>

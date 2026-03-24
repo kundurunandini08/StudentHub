@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudentHub – Projects</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gd:#0b4d39;--gm:#197a59;--gl:#329e75;--gp:#9fd4bf;
+  --gw:rgba(255,255,255,0.48);--gb:rgba(255,255,255,0.65);
+  --sd:rgba(30,70,50,0.22);--td:#164d3a;--tm:#2b6b52;
+}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(145deg,#e4f2ed,#cde9df);min-height:100vh;padding:1.5rem;position:relative;overflow-x:hidden;}
+body::before{content:'';position:fixed;width:420px;height:420px;background:radial-gradient(circle at 40% 40%,#b8e1d2,#9fd4bf);top:-100px;left:-80px;border-radius:50%;filter:blur(90px);z-index:0;animation:orb 20s infinite alternate ease-in-out;}
+body::after{content:'';position:fixed;width:480px;height:480px;background:radial-gradient(circle,#c2f0df,#a6dfcb);bottom:-110px;right:-70px;border-radius:50%;filter:blur(110px);z-index:0;animation:orb 26s infinite alternate-reverse;}
+@keyframes orb{0%{transform:translate(0,0) scale(1);opacity:.5}100%{transform:translate(40px,-35px) scale(1.2);opacity:.8}}
+
+.glass-case{position:relative;z-index:1;max-width:1280px;width:100%;margin:0 auto;background:var(--gw);backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);border-radius:48px;box-shadow:0 32px 64px var(--sd),inset 0 1px 3px rgba(255,255,255,.85);border:1px solid var(--gb);padding:2rem 2.2rem 2.8rem;}
+
+/* TOP BAR */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.6rem;flex-wrap:wrap;gap:12px;}
+.logo{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:500;background:linear-gradient(120deg,#0b4d39,#197a59);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:flex;align-items:center;gap:10px;}
+.logo i{background:rgba(50,120,90,.18);padding:10px;border-radius:50%;color:#1b6e50;font-size:1.6rem;-webkit-text-fill-color:#1b6e50;}
+
+/* NAV */
+.nav-menu{display:flex;gap:.5rem;background:white;border:1px solid #e0e0e0;padding:.4rem .8rem;border-radius:80px;flex-wrap:wrap;}
+.nav-item{flex:1 0 auto;text-align:center;min-width:60px;}
+.nav-item a{text-decoration:none;color:#1b4f3d;font-weight:500;padding:.35rem .65rem;border-radius:40px;display:inline-block;width:100%;transition:.2s;font-size:.82rem;white-space:nowrap;}
+.nav-item.active a{background:#e8f5ef;color:#0f6747;font-weight:600;}
+.nav-item a:hover{background:#f5f5f5;transform:translateY(-2px);}
+
+/* ══════════════════════════════════════
+   PROFILE DROPDOWN — matches screenshot
+   ══════════════════════════════════════ */
+.profile-wrap{position:relative;z-index:9999;}
+
+.profile-trigger{
+  background:rgba(255,255,255,.92);
+  padding:.55rem 1.2rem;border-radius:60px;font-weight:500;
+  color:#124d39;border:1px solid rgba(180,220,200,.8);
+  box-shadow:0 6px 18px rgba(60,120,90,.14);
+  font-size:.9rem;display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:.18s;user-select:none;
+}
+.profile-trigger:hover{background:white;box-shadow:0 8px 24px rgba(60,120,90,.2);}
+
+.trigger-icon{
+  width:30px;height:30px;border-radius:50%;
+  background:rgba(50,158,117,.15);
+  display:flex;align-items:center;justify-content:center;
+  color:#1f8a64;font-size:1rem;flex-shrink:0;
+}
+
+.trigger-roll{
+  font-weight:600;color:#0b4d39;font-size:.88rem;
+  max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+.chevron-icon{font-size:.65rem;color:#197a59;transition:transform .22s ease;margin-left:2px;}
+.chevron-icon.rotated{transform:rotate(180deg);}
+
+/* DROPDOWN — clean white card like screenshot */
+.profile-dropdown{
+  position:absolute;top:calc(100% + 10px);right:0;
+  min-width:220px;
+  background:#ffffff;
+  border-radius:20px;
+  border:1px solid rgba(220,235,228,.9);
+  box-shadow:0 20px 50px -8px rgba(20,70,50,.18), 0 4px 12px rgba(0,0,0,.06);
+  padding:.5rem;
+  display:flex;flex-direction:column;gap:2px;
+  z-index:99999;
+  visibility:hidden;opacity:0;pointer-events:none;
+  transform:translateY(-8px) scale(.97);
+  transition:opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+}
+.profile-dropdown.open{
+  visibility:visible;opacity:1;pointer-events:auto;
+  transform:translateY(0) scale(1);
+  transition:opacity .18s ease, transform .18s ease, visibility 0s linear 0s;
+}
+
+/* Header section — roll + subtitle */
+.dd-header{
+  padding:.75rem 1rem .65rem;
+  border-bottom:1px solid rgba(50,158,117,.12);
+  margin-bottom:.35rem;
+}
+.dd-roll{font-weight:700;color:#0b4d39;font-size:1rem;letter-spacing:.01em;}
+.dd-sub{font-size:.74rem;color:#5a9a7a;font-weight:400;margin-top:2px;display:flex;align-items:center;gap:5px;}
+.dd-sub .dot{width:6px;height:6px;background:#22c87a;border-radius:50%;display:inline-block;}
+
+/* Nav items */
+.dd-item{
+  display:flex;align-items:center;gap:10px;
+  padding:.6rem 1rem;border-radius:12px;
+  font-size:.86rem;font-weight:500;color:#1a3a2a;
+  text-decoration:none;transition:.13s;cursor:pointer;
+}
+.dd-item i{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;flex-shrink:0;
+  background:rgba(50,158,117,.1);color:#329e75;
+}
+.dd-item:hover{background:#f0faf5;color:#0b4d39;}
+.dd-item:hover i{background:rgba(50,158,117,.18);}
+
+.dd-divider{height:1px;background:rgba(50,158,117,.1);margin:.35rem .4rem;}
+
+/* Logout */
+.dd-logout{
+  display:flex;align-items:center;gap:10px;
+  padding:.6rem 1rem;border-radius:12px;
+  font-size:.86rem;font-weight:600;color:#c53030;
+  cursor:pointer;transition:.13s;
+}
+.dd-logout i{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;background:rgba(229,62,62,.08);color:#c53030;
+}
+.dd-logout:hover{background:rgba(229,62,62,.06);}
+
+/* ROLL PROMPT */
+.roll-prompt{background:rgba(255,250,215,.9);border:1px solid rgba(200,160,30,.3);border-radius:20px;padding:.75rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.roll-prompt i{color:#8a6800;}
+.roll-prompt label{font-size:.85rem;color:#6b4f00;font-weight:500;}
+.roll-prompt input{padding:.42rem .9rem;border-radius:25px;border:1px solid rgba(180,140,30,.4);font-family:'DM Sans',sans-serif;font-size:.85rem;color:#3a2800;outline:none;background:white;flex:1;min-width:120px;}
+.roll-prompt input:focus{box-shadow:0 0 0 3px rgba(200,160,30,.2);}
+.roll-prompt button{padding:.42rem 1.1rem;border-radius:25px;background:linear-gradient(105deg,#1c8864,#126a4a);color:white;border:none;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* PAGE TITLE */
+.page-title{text-align:center;margin-bottom:2rem;}
+.page-title h1{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:500;color:var(--gd);margin-bottom:.4rem;}
+.page-title p{color:var(--tm);font-size:.95rem;font-weight:300;}
+
+/* MAIN GRID */
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:1.8rem;align-items:start;}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+
+/* UPLOAD CARD */
+.upload-card{background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border-radius:36px;padding:1.8rem;border:1px solid var(--gb);box-shadow:0 20px 40px -20px #1c6048,inset 0 1px 2px white;}
+.upload-card h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:500;color:var(--td);margin-bottom:1.2rem;display:flex;align-items:center;gap:10px;border-left:4px solid var(--gl);padding-left:.9rem;}
+.upload-card h2 i{color:var(--gm);}
+.form-group{margin-bottom:.9rem;}
+.form-row{display:flex;gap:.8rem;margin-bottom:.9rem;}
+.form-row .form-group{flex:1;margin-bottom:0;}
+.form-label{display:block;font-weight:500;color:var(--td);margin-bottom:.35rem;font-size:.82rem;}
+.form-label i{margin-right:4px;color:var(--gm);}
+.form-input,.form-select,.form-textarea{width:100%;padding:.7rem 1rem;background:rgba(255,255,255,.75);border:1px solid rgba(180,210,190,.8);border-radius:28px;font-size:.86rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--td);transition:.2s;}
+.form-textarea{border-radius:18px;resize:vertical;min-height:75px;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{background:white;box-shadow:0 0 0 3px rgba(50,150,110,.2);border-color:#4caa83;}
+
+/* TECH TAGS */
+.tech-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem;}
+.tech-tag{background:rgba(50,158,117,.12);color:var(--gd);padding:.25rem .75rem;border-radius:25px;font-size:.78rem;font-weight:500;cursor:pointer;border:1px solid rgba(50,158,117,.22);transition:.15s;user-select:none;}
+.tech-tag.active{background:rgba(50,158,117,.32);border-color:rgba(50,158,117,.55);font-weight:600;}
+.tech-tag:hover{background:rgba(50,158,117,.2);}
+
+/* FILE ZONE — fixed click area */
+.file-zone{
+  border:2px dashed rgba(90,160,130,.5);
+  background:rgba(255,255,255,.45);
+  padding:1.4rem 1rem;text-align:center;
+  border-radius:30px;margin:.9rem 0;
+  cursor:pointer;transition:.2s;position:relative;
+}
+.file-zone:hover{border-color:#2a9d70;background:rgba(255,255,255,.7);}
+.file-zone i{font-size:2rem;color:#317c5e;display:block;margin-bottom:5px;pointer-events:none;}
+.fz-hint{font-size:.88rem;color:#154f3b;font-weight:500;pointer-events:none;}
+.fz-sub{font-size:.75rem;color:#3f6f5b;margin-top:4px;pointer-events:none;}
+/* Hidden input sits OVER the entire zone */
+.file-zone input[type="file"]{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;cursor:pointer;z-index:2;
+}
+.file-selected{margin:6px 0;background:rgba(230,250,235,.8);padding:6px 16px;border-radius:50px;display:inline-block;font-size:.82rem;color:var(--td);}
+
+/* UPLOAD BTN */
+.upload-btn{background:linear-gradient(105deg,#1c8864,#126a4a);color:white;border:none;padding:.85rem 1.4rem;width:100%;border-radius:50px;font-size:.95rem;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 16px 24px -16px #1c6048;transition:.15s;margin-top:.4rem;}
+.upload-btn:hover{background:linear-gradient(105deg,#249d76,#17855f);transform:translateY(-2px);}
+.upload-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+/* SUCCESS MSG */
+.success-msg{display:none;background:rgba(220,255,230,.85);border-radius:50px;padding:.7rem 1.3rem;margin:.8rem 0 .3rem;font-size:.9rem;font-weight:500;color:#006d45;border:1px solid rgba(150,220,180,.5);align-items:center;justify-content:center;gap:9px;}
+.success-msg.warn{background:rgba(255,235,210,.9);color:#b85e00;}
+
+/* RIGHT COLUMN */
+.right-col{display:flex;flex-direction:column;gap:1.6rem;}
+.sec-heading{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:500;color:var(--td);margin-bottom:.9rem;display:flex;align-items:center;gap:8px;}
+.sec-heading i{color:var(--gm);}
+
+/* PROJECT CARDS */
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;}
+.project-card{background:rgba(255,255,255,.55);backdrop-filter:blur(8px);border-radius:26px;padding:1.2rem;border:1px solid var(--gb);box-shadow:0 12px 24px -14px var(--sd);transition:.2s;display:flex;flex-direction:column;gap:.6rem;}
+.project-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.75);box-shadow:0 20px 36px -14px rgba(20,80,55,.22);}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.card-icon{width:40px;height:40px;background:rgba(50,158,117,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.card-views{font-size:.76rem;color:var(--tm);display:flex;align-items:center;gap:3px;background:rgba(255,255,255,.6);padding:.2rem .65rem;border-radius:25px;}
+.card-title{font-weight:600;color:var(--td);font-size:.95rem;line-height:1.3;}
+.card-desc{color:#3a6b58;font-size:.8rem;line-height:1.5;font-weight:300;}
+.card-tags{display:flex;flex-wrap:wrap;gap:.3rem;}
+.card-tag{background:rgba(50,158,117,.1);color:var(--gd);padding:.18rem .62rem;border-radius:18px;font-size:.72rem;font-weight:500;border:1px solid rgba(50,158,117,.18);}
+.card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:.6rem;border-top:1px solid rgba(50,158,117,.1);}
+.card-author{display:flex;align-items:center;gap:6px;}
+.author-av{width:26px;height:26px;background:linear-gradient(135deg,#329e75,#197a59);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.65rem;font-weight:700;flex-shrink:0;}
+.author-name{font-size:.76rem;color:var(--tm);}
+.author-name strong{display:block;font-weight:600;color:var(--td);font-size:.78rem;}
+.dl-btn{background:linear-gradient(105deg,#1c8864,#126a4a);color:white;border:none;padding:.35rem .95rem;border-radius:25px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;box-shadow:0 4px 12px -4px #1c6048;transition:.15s;white-space:nowrap;}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 16px -4px #1c6048;}
+.dl-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+/* GITHUB */
+.github-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.9rem;}
+.github-card{background:rgba(255,255,255,.5);backdrop-filter:blur(8px);border-radius:24px;padding:1.2rem 1rem;border:1px solid var(--gb);box-shadow:0 10px 22px -12px var(--sd);transition:.2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+.github-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.7);}
+.gh-avatar{width:60px;height:60px;border-radius:50%;border:2px solid rgba(50,158,117,.3);object-fit:cover;box-shadow:0 4px 12px rgba(30,100,60,.15);}
+.gh-name{font-weight:600;color:var(--td);font-size:.9rem;}
+.gh-handle{font-size:.76rem;color:var(--tm);display:flex;align-items:center;gap:3px;}
+.gh-badge{padding:.18rem .72rem;border-radius:18px;font-size:.72rem;font-weight:500;border:1px solid;}
+.gh-stats{display:flex;gap:.7rem;font-size:.74rem;color:var(--tm);}
+.gh-btn{background:rgba(255,255,255,.7);color:var(--gd);border:1px solid rgba(50,158,117,.3);padding:.32rem 1rem;border-radius:25px;font-size:.76rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;transition:.15s;text-decoration:none;width:100%;justify-content:center;}
+.gh-btn:hover{background:linear-gradient(105deg,#1c8864,#126a4a);color:white;border-color:transparent;}
+.badge-ml{background:rgba(50,120,200,.1);color:#1a4a99;border-color:rgba(50,120,200,.25);}
+.badge-web{background:rgba(200,100,50,.1);color:#8a3a10;border-color:rgba(200,100,50,.25);}
+.badge-os{background:rgba(80,150,80,.12);color:#1a5a1a;border-color:rgba(80,150,80,.25);}
+.badge-ds{background:rgba(120,60,180,.1);color:#50206a;border-color:rgba(120,60,180,.25);}
+.badge-cloud{background:rgba(20,140,180,.1);color:#0a5a7a;border-color:rgba(20,140,180,.25);}
+
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(50,158,117,.3),transparent);margin:.5rem 0;}
+.footer-note{text-align:center;color:var(--tm);padding:.9rem 2rem;background:rgba(255,255,255,.3);border-radius:60px;font-size:.84rem;font-weight:300;margin-top:1.4rem;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-thumb{background:rgba(50,158,117,.35);border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="glass-case">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="logo"><i class="fas fa-cloud-moon"></i> StudentHub Projects</div>
+
+    <nav class="nav-menu">
+      <div class="nav-item"><a id="navPDF"      href="home.html">📄 PDFs</a></div>
+      <div class="nav-item"><a id="navRecycle"  href="recycling.html">&#9851; Recycling</a></div>
+      <div class="nav-item"><a id="navJobs"     href="jobs.html">&#128188; Jobs</a></div>
+      <div class="nav-item"><a id="navFeedback" href="feedback.html">&#128172; Feedback</a></div>
+      <div class="nav-item active"><a id="navProjects" href="projects.html">&#128640; Projects</a></div>
+    </nav>
+
+    <!-- PROFILE DROPDOWN — clean white style matching screenshot -->
+    <div class="profile-wrap" id="profileWrap">
+      <div class="profile-trigger" id="profileTrigger">
+        <div class="trigger-icon"><i class="fas fa-user-circle"></i></div>
+        <span class="trigger-roll" id="rollShow">Loading…</span>
+        <i class="fas fa-chevron-down chevron-icon" id="chevronIcon"></i>
+      </div>
+
+      <div class="profile-dropdown" id="profileDD">
+        <!-- Header: roll + logged-in subtitle -->
+        <div class="dd-header">
+          <div class="dd-roll" id="ddRoll">Guest</div>
+          <div class="dd-sub"><span class="dot"></span> Logged in &middot; StudentHub</div>
+        </div>
+
+        <!-- Nav links -->
+        <a class="dd-item" id="lnkHome"     href="home.html">     <i class="fas fa-file-pdf"></i>    PDFs &amp; Videos</a>
+        <a class="dd-item" id="lnkRecycle"  href="recycling.html"><i class="fas fa-recycle"></i>      Recycling</a>
+        <a class="dd-item" id="lnkJobs"     href="jobs.html">     <i class="fas fa-briefcase"></i>    Jobs</a>
+        <a class="dd-item" id="lnkFeedback" href="feedback.html"> <i class="fas fa-comment-dots"></i> Feedback</a>
+        <a class="dd-item" id="lnkProjects" href="projects.html"> <i class="fas fa-rocket"></i>       Projects</a>
+
+        <div class="dd-divider"></div>
+        <div class="dd-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROLL PROMPT — shown only when no roll found -->
+  <div class="roll-prompt" id="rollPrompt" style="display:none;">
+    <i class="fas fa-id-card"></i>
+    <label for="rollInput">Enter your Roll Number:</label>
+    <input type="text" id="rollInput" placeholder="e.g. 22CS101" maxlength="15">
+    <button id="saveRollBtn">Save</button>
+  </div>
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">
+    <h1>Mini Project Repository</h1>
+    <p>Upload your projects &bull; Inspire juniors &bull; Build a portfolio that speaks for itself.</p>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT: UPLOAD FORM -->
+    <div class="upload-card">
+      <h2><i class="fas fa-feather-alt"></i> Upload Your Project</h2>
+      <p style="font-size:.82rem;color:var(--tm);margin-bottom:1rem;font-weight:300;">Share your work and help future B.Tech students.</p>
+
+      <div class="form-group">
+        <label class="form-label"><i class="fas fa-pencil-alt"></i> Project Title</label>
+        <input class="form-input" type="text" id="projectTitle" placeholder="e.g. Smart Attendance System">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label"><i class="fas fa-building"></i> Department</label>
+          <select class="form-select" id="dept">
+            <option>CSE</option><option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><i class="fas fa-calendar"></i> Semester</label>
+          <select class="form-select" id="sem">
+            <option>Sem 1</option><option>Sem 2</option><option>Sem 3</option><option>Sem 4</option>
+            <option>Sem 5</option><option>Sem 6</option><option>Sem 7</option><option>Sem 8</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><i class="fas fa-align-left"></i> Description</label>
+        <textarea class="form-textarea" id="projectDesc" placeholder="Brief project description..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label"><i class="fas fa-code"></i> Tech Stack</label>
+        <div class="tech-tags" id="techTags">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">React</span>
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">MySQL</span>
+          <span class="tech-tag">Flask</span>
+          <span class="tech-tag">TensorFlow</span>
+          <span class="tech-tag">Arduino</span>
+          <span class="tech-tag">MongoDB</span>
+          <span class="tech-tag">HTML/CSS</span>
+          <span class="tech-tag">Java</span>
+        </div>
+      </div>
+
+      <!-- FILE ZONE: input covers entire zone so clicking anywhere opens picker -->
+      <div class="file-zone" id="fileZone">
+        <input type="file" id="fileInput" multiple accept=".pdf,.zip,.jpg,.jpeg,.png,.pptx,.docx">
+        <i class="fas fa-folder-open"></i>
+        <div class="fz-hint" id="fzHint">Click here to choose files</div>
+        <div class="fz-sub">ZIP, PDF, PPT, DOCX up to 50MB</div>
+      </div>
+      <div id="fileSelected" class="file-selected" style="display:none;"></div>
+
+      <div id="successMsg" class="success-msg"></div>
+
+      <button class="upload-btn" id="uploadBtn">
+        <i class="fas fa-paper-plane"></i> Upload Project
+      </button>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+      <div>
+        <div class="sec-heading"><i class="fas fa-rocket"></i> Community Projects</div>
+        <div class="projects-grid" id="projectsGrid">
+
+          <div class="project-card">
+            <div class="card-top"><div class="card-icon">&#129302;</div><div class="card-views"><i class="fas fa-eye"></i> 1.2k</div></div>
+            <div class="card-title">Smart Attendance System</div>
+            <div class="card-desc">Face recognition attendance using OpenCV and Flask.</div>
+            <div class="card-tags"><span class="card-tag">Python</span><span class="card-tag">OpenCV</span><span class="card-tag">Flask</span></div>
+            <div class="card-footer">
+              <div class="card-author"><div class="author-av">RS</div><div class="author-name"><strong>Rahul S.</strong>Sem 6</div></div>
+              <button class="dl-btn" data-demo="0"><i class="fas fa-download"></i> Download</button>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="card-top"><div class="card-icon">&#128379;</div><div class="card-views"><i class="fas fa-eye"></i> 880</div></div>
+            <div class="card-title">Online Voting System</div>
+            <div class="card-desc">Blockchain-based secure voting for college elections.</div>
+            <div class="card-tags"><span class="card-tag">React</span><span class="card-tag">Node.js</span><span class="card-tag">MongoDB</span></div>
+            <div class="card-footer">
+              <div class="card-author"><div class="author-av">PK</div><div class="author-name"><strong>Priya K.</strong>Sem 5</div></div>
+              <button class="dl-btn" data-demo="1"><i class="fas fa-download"></i> Download</button>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="card-top"><div class="card-icon">&#127829;</div><div class="card-views"><i class="fas fa-eye"></i> 2.3k</div></div>
+            <div class="card-title">Campus Food Delivery</div>
+            <div class="card-desc">Mobile-first canteen ordering with real-time tracking.</div>
+            <div class="card-tags"><span class="card-tag">React Native</span><span class="card-tag">Firebase</span></div>
+            <div class="card-footer">
+              <div class="card-author"><div class="author-av">AM</div><div class="author-name"><strong>Arjun M.</strong>Sem 7</div></div>
+              <button class="dl-btn" data-demo="2"><i class="fas fa-download"></i> Download</button>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="card-top"><div class="card-icon">&#128218;</div><div class="card-views"><i class="fas fa-eye"></i> 760</div></div>
+            <div class="card-title">Library Management System</div>
+            <div class="card-desc">Book issue, return, fine tracking with admin dashboard.</div>
+            <div class="card-tags"><span class="card-tag">Java</span><span class="card-tag">MySQL</span><span class="card-tag">JSP</span></div>
+            <div class="card-footer">
+              <div class="card-author"><div class="author-av">DR</div><div class="author-name"><strong>Divya R.</strong>Sem 4</div></div>
+              <button class="dl-btn" data-demo="3"><i class="fas fa-download"></i> Download</button>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="card-top"><div class="card-icon">&#127782;</div><div class="card-views"><i class="fas fa-eye"></i> 1.5k</div></div>
+            <div class="card-title">Weather Prediction ML</div>
+            <div class="card-desc">ML model predicting Chennai weather with 92% accuracy.</div>
+            <div class="card-tags"><span class="card-tag">Python</span><span class="card-tag">Scikit-learn</span></div>
+            <div class="card-footer">
+              <div class="card-author"><div class="author-av">KB</div><div class="author-name"><strong>Karthik B.</strong>Sem 6</div></div>
+              <button class="dl-btn" data-demo="4"><i class="fas fa-download"></i> Download</button>
+            </div>
+          </div>
+
+          <div class="project-card">
+            <div class="card-top"><div class="card-icon">&#128184;</div><div class="card-views"><i class="fas fa-eye"></i> 3.1k</div></div>
+            <div class="card-title">Student Expense Tracker</div>
+            <div class="card-desc">Budget tracking with category-wise spending analytics.</div>
+            <div class="card-tags"><span class="card-tag">React</span><span class="card-tag">Firebase</span></div>
+            <div class="card-footer">
+              <div class="card-author"><div class="author-av">SP</div><div class="author-name"><strong>Sneha P.</strong>Sem 5</div></div>
+              <button class="dl-btn" data-demo="5"><i class="fas fa-download"></i> Download</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <div class="sec-heading"><i class="fab fa-github"></i> Featured GitHub Profiles</div>
+        <p style="color:var(--tm);font-size:.84rem;font-weight:300;margin-bottom:.9rem;">Follow these developers for inspiration and open source projects.</p>
+        <div class="github-grid">
+
+          <div class="github-card">
+            <img class="gh-avatar" src="https://avatars.githubusercontent.com/u/9073706" alt="SS" onerror="this.src='https://ui-avatars.com/api/?name=SS&background=329e75&color=fff'">
+            <div class="gh-name">Sindre Sorhus</div>
+            <div class="gh-handle"><i class="fab fa-github"></i> sindresorhus</div>
+            <span class="gh-badge badge-web">Open Source &bull; Node.js</span>
+            <div class="gh-stats"><span><i class="fas fa-star"></i> 70k+</span><span><i class="fas fa-code-branch"></i> 1.2k</span></div>
+            <a class="gh-btn" href="https://github.com/sindresorhus" target="_blank"><i class="fab fa-github"></i> View Profile</a>
+          </div>
+
+          <div class="github-card">
+            <img class="gh-avatar" src="https://avatars.githubusercontent.com/u/1093390" alt="AK" onerror="this.src='https://ui-avatars.com/api/?name=AK&background=1a4a99&color=fff'">
+            <div class="gh-name">Andrej Karpathy</div>
+            <div class="gh-handle"><i class="fab fa-github"></i> karpathy</div>
+            <span class="gh-badge badge-ml">AI &bull; Deep Learning</span>
+            <div class="gh-stats"><span><i class="fas fa-star"></i> 100k+</span><span><i class="fas fa-code-branch"></i> 50+</span></div>
+            <a class="gh-btn" href="https://github.com/karpathy" target="_blank"><i class="fab fa-github"></i> View Profile</a>
+          </div>
+
+          <div class="github-card">
+            <img class="gh-avatar" src="https://avatars.githubusercontent.com/u/22620773" alt="BT" onerror="this.src='https://ui-avatars.com/api/?name=BT&background=0b4d39&color=fff'">
+            <div class="gh-name">Brad Traversy</div>
+            <div class="gh-handle"><i class="fab fa-github"></i> bradtraversy</div>
+            <span class="gh-badge badge-web">Web Dev &bull; JavaScript</span>
+            <div class="gh-stats"><span><i class="fas fa-star"></i> 60k+</span><span><i class="fas fa-code-branch"></i> 400+</span></div>
+            <a class="gh-btn" href="https://github.com/bradtraversy" target="_blank"><i class="fab fa-github"></i> View Profile</a>
+          </div>
+
+          <div class="github-card">
+            <img class="gh-avatar" src="https://avatars.githubusercontent.com/u/110412" alt="LT" onerror="this.src='https://ui-avatars.com/api/?name=LT&background=1a5a1a&color=fff'">
+            <div class="gh-name">Linus Torvalds</div>
+            <div class="gh-handle"><i class="fab fa-github"></i> torvalds</div>
+            <span class="gh-badge badge-os">Linux &bull; OS &bull; Kernel</span>
+            <div class="gh-stats"><span><i class="fas fa-star"></i> Creator of Linux</span></div>
+            <a class="gh-btn" href="https://github.com/torvalds" target="_blank"><i class="fab fa-github"></i> View Profile</a>
+          </div>
+
+          <div class="github-card">
+            <img class="gh-avatar" src="https://avatars.githubusercontent.com/u/1299148" alt="JG" onerror="this.src='https://ui-avatars.com/api/?name=JG&background=50206a&color=fff'">
+            <div class="gh-name">Joel Grus</div>
+            <div class="gh-handle"><i class="fab fa-github"></i> joelgrus</div>
+            <span class="gh-badge badge-ds">Data Science &bull; Python</span>
+            <div class="gh-stats"><span><i class="fas fa-star"></i> 18k+</span><span><i class="fas fa-code-branch"></i> 40+</span></div>
+            <a class="gh-btn" href="https://github.com/joelgrus" target="_blank"><i class="fab fa-github"></i> View Profile</a>
+          </div>
+
+          <div class="github-card">
+            <img class="gh-avatar" src="https://avatars.githubusercontent.com/u/2959609" alt="KH" onerror="this.src='https://ui-avatars.com/api/?name=KH&background=0a5a7a&color=fff'">
+            <div class="gh-name">Kelsey Hightower</div>
+            <div class="gh-handle"><i class="fab fa-github"></i> kelseyhightower</div>
+            <span class="gh-badge badge-cloud">Cloud &bull; Kubernetes</span>
+            <div class="gh-stats"><span><i class="fas fa-star"></i> 30k+</span><span><i class="fas fa-code-branch"></i> 80+</span></div>
+            <a class="gh-btn" href="https://github.com/kelseyhightower" target="_blank"><i class="fab fa-github"></i> View Profile</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note"><i class="fas fa-seedling"></i> &nbsp;Upload &bull; Inspire &bull; Build a portfolio that speaks for itself</div>
+</div>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════════
+   ROLL NUMBER — read from URL or localStorage
+   ════════════════════════════════════ */
+var urlParams = new URLSearchParams(window.location.search);
+var roll = (
+  urlParams.get('roll') ||
+  urlParams.get('id')   ||
+  localStorage.getItem('studentRoll') ||
+  ''
+).trim();
+
+var NAV_IDS   = ['navPDF','navRecycle','navJobs','navFeedback','navProjects'];
+var DD_IDS    = ['lnkHome','lnkRecycle','lnkJobs','lnkFeedback','lnkProjects'];
+var NAV_HREFS = ['home.html','recycling.html','jobs.html','feedback.html','projects.html'];
+
+function setRoll(r) {
+  r = (r || '').trim();
+  if (!r) r = 'Guest';
+  localStorage.setItem('studentRoll', r);
+
+  // Update trigger button
+  document.getElementById('rollShow').textContent = r;
+  // Update dropdown header
+  document.getElementById('ddRoll').textContent   = r;
+  // Hide prompt
+  document.getElementById('rollPrompt').style.display = 'none';
+
+  // Append roll to all nav links so it persists across pages
+  var suffix = '?roll=' + encodeURIComponent(r);
+  NAV_IDS.forEach(function(id, i){
+    var el = document.getElementById(id);
+    if (el) el.href = NAV_HREFS[i] + suffix;
+  });
+  DD_IDS.forEach(function(id, i){
+    var el = document.getElementById(id);
+    if (el) el.href = NAV_HREFS[i] + suffix;
+  });
+}
+
+// Initialise
+if (roll) {
+  setRoll(roll);
+} else {
+  document.getElementById('rollShow').textContent = 'Set Roll';
+  document.getElementById('ddRoll').textContent   = 'Guest';
+  document.getElementById('rollPrompt').style.display = 'flex';
+}
+
+// Save roll from prompt
+document.getElementById('saveRollBtn').addEventListener('click', function(){
+  var v = document.getElementById('rollInput').value.trim();
+  if (!v) { alert('Please enter your roll number.'); return; }
+  setRoll(v);
+});
+document.getElementById('rollInput').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') document.getElementById('saveRollBtn').click();
+});
+
+/* ════════════════════════════════════
+   DROPDOWN TOGGLE
+   ════════════════════════════════════ */
+var ddIsOpen = false;
+
+function openDD()  {
+  ddIsOpen = true;
+  document.getElementById('profileDD').classList.add('open');
+  document.getElementById('chevronIcon').classList.add('rotated');
+}
+function closeDD() {
+  ddIsOpen = false;
+  document.getElementById('profileDD').classList.remove('open');
+  document.getElementById('chevronIcon').classList.remove('rotated');
+}
+
+document.getElementById('profileTrigger').addEventListener('click', function(e){
+  e.stopPropagation();
+  ddIsOpen ? closeDD() : openDD();
+});
+
+// Close when clicking outside
+document.addEventListener('click', function(e){
+  if (ddIsOpen && !document.getElementById('profileWrap').contains(e.target)) closeDD();
+});
+
+// Prevent clicks inside dropdown from bubbling out and closing it
+document.getElementById('profileDD').addEventListener('click', function(e){
+  e.stopPropagation();
+});
+
+// Logout
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  localStorage.removeItem('studentRoll');
+  window.location.href = 'login.html';
+});
+
+/* ════════════════════════════════════
+   TECH TAGS
+   ════════════════════════════════════ */
+document.getElementById('techTags').addEventListener('click', function(e){
+  if (e.target.classList.contains('tech-tag')) {
+    e.target.classList.toggle('active');
+  }
+});
+
+/* ════════════════════════════════════
+   FILE ZONE — input covers zone, no JS needed for open
+   ════════════════════════════════════ */
+var selectedFiles = [];
+var fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', function(){
+  if (this.files.length) {
+    selectedFiles = Array.from(this.files);
+    showFileNames();
+  }
+});
+
+// Drag-and-drop support
+var fileZone = document.getElementById('fileZone');
+fileZone.addEventListener('dragover', function(e){
+  e.preventDefault();
+  fileZone.style.borderColor = '#2a9d70';
+  fileZone.style.background  = 'rgba(255,255,255,.7)';
+});
+fileZone.addEventListener('dragleave', function(){
+  fileZone.style.borderColor = 'rgba(90,160,130,.5)';
+  fileZone.style.background  = 'rgba(255,255,255,.45)';
+});
+fileZone.addEventListener('drop', function(e){
+  e.preventDefault();
+  fileZone.style.borderColor = 'rgba(90,160,130,.5)';
+  fileZone.style.background  = 'rgba(255,255,255,.45)';
+  if (e.dataTransfer.files.length) {
+    selectedFiles = Array.from(e.dataTransfer.files);
+    showFileNames();
+  }
+});
+
+function showFileNames(){
+  var el = document.getElementById('fileSelected');
+  el.style.display = 'inline-block';
+  el.innerHTML = selectedFiles.length === 1
+    ? '<i class="fas fa-paperclip"></i> ' + selectedFiles[0].name
+    : '<i class="fas fa-layer-group"></i> ' + selectedFiles.length + ' files selected';
+  document.getElementById('fzHint').textContent = 'Files ready \u2713';
+}
+
+/* ════════════════════════════════════
+   DOWNLOAD HELPERS
+   ════════════════════════════════════ */
+/* Upload/project localStorage demo code removed at user request */
+
+function addCard(proj, prepend) {
+  var initials = (proj.roll || 'ST').replace(/[^A-Za-z0-9]/g,'').substring(0,2).toUpperCase() || 'ST';
+  var techHTML = (proj.tech || []).slice(0,3).map(function(t){
+    return '<span class="card-tag">' + t + '</span>';
+  }).join('');
+  var hasFile = proj.files && proj.files.length > 0;
+
+  var card = document.createElement('div');
+  card.className = 'project-card';
+  card.innerHTML =
+    '<div class="card-top"><div class="card-icon">&#x1F195;</div><div class="card-views"><i class="fas fa-eye"></i> 0</div></div>'
+    + '<div class="card-title">' + proj.title + '</div>'
+    + '<div class="card-desc">'  + (proj.description || 'No description.') + '</div>'
+    + '<div class="card-tags">'  + techHTML + '</div>'
+    + '<div class="card-footer">'
+    +   '<div class="card-author"><div class="author-av">' + initials + '</div>'
+    +   '<div class="author-name"><strong>' + (proj.roll || '\u2014') + '</strong>' + (proj.sem || '') + '</div></div>'
+    +   '<button class="dl-btn" data-uploaded="' + proj.id + '">'
+    +     (hasFile ? '<i class="fas fa-download"></i> Download' : '<i class="fas fa-file-alt"></i> Info')
+    +   '</button>'
+    + '</div>';
+
+  var grid = document.getElementById('projectsGrid');
+  if (prepend) grid.insertBefore(card, grid.firstChild);
+  else grid.appendChild(card);
+}
+
+getAll().forEach(function(p){ addCard(p, false); });
+
+/* ════════════════════════════════════
+   SHOW MESSAGE
+   ════════════════════════════════════ */
+function showMsg(text, warn) {
+  var el = document.getElementById('successMsg');
+  el.style.display = 'flex';
+  el.className     = warn ? 'success-msg warn' : 'success-msg';
+  el.innerHTML     = '<i class="fas fa-' + (warn ? 'exclamation' : 'check') + '-circle"></i> ' + text;
+  setTimeout(function(){ el.style.display = 'none'; }, 5000);
+}
+</script>
+</body>
+</html>

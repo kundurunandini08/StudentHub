@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudentHub – Enter the Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --teal:         #0f9b8e;
+      --teal-light:   #14c5b5;
+      --teal-pale:    #e6f8f7;
+      --teal-glow:    rgba(15,155,142,0.18);
+
+      --bg:           #f5fafa;
+      --bg2:          #edf7f6;
+      --surface:      #ffffff;
+      --surface2:     #f0faf9;
+
+      --text:         #1a2e2b;
+      --text-mid:     #3d5a57;
+      --text-soft:    #7a9895;
+
+      --border:       #d4eeeb;
+      --border-soft:  #e8f5f3;
+
+      --blue:   #4a90d9; --blue-pale:   #eaf3fc;
+      --green:  #27ae60; --green-pale:  #e8f8ee;
+      --orange: #e67e22; --orange-pale: #fef3e8;
+      --purple: #8e44ad; --purple-pale: #f4eafb;
+      --red:    #e74c3c; --red-pale:    #fdecea;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(15,155,142,0.1) 1px, transparent 1px);
+      background-size: 32px 32px;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* NAVBAR */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 4rem;
+      background: rgba(255,255,255,0.93);
+      backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--border);
+      box-shadow: 0 2px 20px rgba(15,155,142,0.08);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--teal), var(--teal-light));
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; box-shadow: 0 4px 12px var(--teal-glow);
+    }
+    .logo-text { font-size: 1.3rem; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+    .logo-text span { color: var(--teal); }
+    .nav-pill {
+      background: var(--teal-pale); border: 1px solid var(--border);
+      border-radius: 20px; padding: 0.35rem 1rem;
+      font-size: 0.78rem; font-weight: 600; color: var(--teal); letter-spacing: 0.5px;
+    }
+
+    /* PAGE WRAPPER */
+    .page-wrapper {
+      position: relative; z-index: 1;
+      min-height: 100vh; display: flex; flex-direction: column;
+      padding-top: 72px;
+    }
+
+    /* LOGIN SECTION */
+    #login-section {
+      display: grid; grid-template-columns: 1fr 1.15fr;
+      min-height: calc(100vh - 72px); align-items: stretch;
+    }
+
+    /* LEFT PANEL */
+    .features-panel {
+      background: linear-gradient(160deg, #e8f8f6 0%, #f0faf9 60%, #e4f6f3 100%);
+      border-right: 1.5px solid var(--border);
+      padding: 3.5rem 2.5rem;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 0.85rem; position: relative; overflow: hidden;
+    }
+    .features-panel::before {
+      content: ''; position: absolute; width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(15,155,142,0.12) 0%, transparent 65%);
+      top: -80px; left: -80px; pointer-events: none;
+    }
+    .features-panel::after {
+      content: ''; position: absolute; width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(20,197,181,0.1) 0%, transparent 65%);
+      bottom: -50px; right: -50px; pointer-events: none;
+    }
+
+    .features-heading { margin-bottom: 0.6rem; }
+    .features-heading .eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 1.3px;
+      text-transform: uppercase; color: var(--teal);
+      margin-bottom: 0.5rem; display: block;
+    }
+    .features-heading h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.65rem; color: var(--text); line-height: 1.3;
+    }
+    .features-heading h2 span { color: var(--teal); }
+
+    .feature-card {
+      background: var(--surface); border: 1.5px solid var(--border-soft);
+      border-radius: 14px; padding: 0.95rem 1.1rem;
+      display: flex; align-items: center; gap: 1rem;
+      cursor: default; transition: all 0.26s ease;
+      animation: slide-in 0.5s ease both;
+      position: relative; overflow: hidden;
+      box-shadow: 0 2px 10px rgba(15,155,142,0.05);
+    }
+    .feature-card::after {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      border-radius: 3px; opacity: 0; transition: opacity 0.22s;
+    }
+    .fc-study::after    { background: linear-gradient(to bottom,#4a90d9,#64b0f4); }
+    .fc-recycle::after  { background: linear-gradient(to bottom,#27ae60,#55d98d); }
+    .fc-jobs::after     { background: linear-gradient(to bottom,#e67e22,#f0a050); }
+    .fc-feedback::after { background: linear-gradient(to bottom,#8e44ad,#c07de0); }
+    .fc-projects::after { background: linear-gradient(to bottom,#e74c3c,#f07070); }
+
+    .feature-card:hover {
+      border-color: var(--teal-light); transform: translateX(5px);
+      box-shadow: 0 6px 22px rgba(15,155,142,0.12); background: var(--teal-pale);
+    }
+    .feature-card:hover::after { opacity: 1; }
+    .feature-card:nth-child(2){animation-delay:0.08s;}
+    .feature-card:nth-child(3){animation-delay:0.16s;}
+    .feature-card:nth-child(4){animation-delay:0.24s;}
+    .feature-card:nth-child(5){animation-delay:0.32s;}
+    .feature-card:nth-child(6){animation-delay:0.40s;}
+
+    .fc-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem;
+    }
+    .fc-info h4 { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .fc-info p  { font-size: 0.74rem; color: var(--text-soft); line-height: 1.4; }
+
+    /* RIGHT PANEL */
+    .login-panel {
+      background: var(--surface);
+      padding: 3.5rem 3.5rem;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      position: relative;
+    }
+    .login-panel::before {
+      content: ''; position: absolute; width: 380px; height: 380px;
+      background: radial-gradient(circle, rgba(15,155,142,0.07) 0%, transparent 70%);
+      bottom: -100px; right: -80px; pointer-events: none;
+    }
+
+    .login-box {
+      width: 100%; max-width: 400px;
+      animation: fade-up 0.6s 0.12s ease both;
+    }
+
+    .login-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--teal-pale); border: 1.5px solid var(--border);
+      border-radius: 20px; padding: 0.38rem 1rem;
+      font-size: 0.76rem; font-weight: 700; color: var(--teal);
+      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 1.4rem;
+    }
+    .login-badge::before {
+      content: ''; width: 7px; height: 7px;
+      background: var(--teal-light); border-radius: 50%;
+      animation: blink 1.4s ease infinite;
+    }
+
+    .login-box h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.3rem; color: var(--text); line-height: 1.2; margin-bottom: 0.5rem;
+    }
+    .login-box h1 span { color: var(--teal); }
+    .login-box .subtitle {
+      font-size: 0.9rem; color: var(--text-soft);
+      margin-bottom: 2rem; line-height: 1.65;
+    }
+
+    .input-group { margin-bottom: 1.3rem; }
+    .input-group label {
+      display: block; font-size: 0.78rem; font-weight: 700;
+      color: var(--text-mid); letter-spacing: 0.6px;
+      text-transform: uppercase; margin-bottom: 0.45rem;
+    }
+    .input-wrap { position: relative; display: flex; align-items: center; }
+    .input-icon { position: absolute; left: 13px; font-size: 1rem; opacity: 0.55; pointer-events: none; }
+    .input-wrap input {
+      width: 100%; background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 0.85rem 1rem 0.85rem 2.7rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.97rem; font-weight: 500;
+      color: var(--text); outline: none; transition: all 0.2s; letter-spacing: 0.5px;
+    }
+    .input-wrap input::placeholder { color: var(--text-soft); }
+    .input-wrap input:focus {
+      border-color: var(--teal); background: #fff;
+      box-shadow: 0 0 0 3px rgba(15,155,142,0.12);
+    }
+
+    .hint-text { font-size: 0.73rem; color: var(--text-soft); margin-top: 0.38rem; padding-left: 0.2rem; }
+    .error-msg { font-size: 0.75rem; color: #e74c3c; margin-top: 0.38rem; display: none; padding-left: 0.2rem; }
+    .error-msg.show { display: block; }
+
+    .btn-enter {
+      width: 100%;
+      background: linear-gradient(135deg, var(--teal), var(--teal-light));
+      color: white; border: none;
+      padding: 0.95rem 2rem; border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: all 0.25s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 6px 24px rgba(15,155,142,0.28);
+      letter-spacing: 0.3px; margin-top: 0.4rem;
+    }
+    .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(15,155,142,0.38); }
+    .btn-enter:active { transform: translateY(0); }
+    .btn-enter .arrow { transition: transform 0.2s; }
+    .btn-enter:hover .arrow { transform: translateX(4px); }
+
+    .divider { display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0 0; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 0.72rem; color: var(--text-soft); font-weight: 600; }
+
+    .info-strip {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--teal-pale); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem; margin-top: 1rem;
+    }
+    .info-strip span { font-size: 0.78rem; color: var(--text-mid); line-height: 1.5; }
+    .info-strip .icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* HUB SECTION */
+    #hub-section {
+      display: none; padding: 5rem 4rem;
+      background: var(--bg2); position: relative; z-index: 1;
+      border-top: 2px solid var(--border);
+    }
+    #hub-section.visible { display: block; }
+
+    .hub-section-bg {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(15,155,142,0.07) 1px, transparent 1px);
+      background-size: 32px 32px; pointer-events: none;
+    }
+
+    .hub-inner { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; }
+
+    .hub-welcome { text-align: center; margin-bottom: 2.8rem; }
+    .greet-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--teal-pale); border: 1.5px solid var(--border);
+      border-radius: 20px; padding: 0.4rem 1.2rem;
+      font-size: 0.78rem; font-weight: 700; color: var(--teal);
+      letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .hub-welcome h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.4rem; color: var(--text); line-height: 1.2; margin-bottom: 0.5rem;
+    }
+    .hub-welcome h2 span { color: var(--teal); }
+    #student-roll-display { font-size: 0.95rem; color: var(--text-soft); font-weight: 500; }
+    #student-roll-display strong { color: var(--teal); }
+
+    /* HUB CARD */
+    .hub-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 22px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(15,155,142,0.1), 0 4px 20px rgba(0,0,0,0.04);
+      animation: pop-in 0.5s ease both;
+    }
+
+    .hub-card-top {
+      background: linear-gradient(135deg, #e6f8f7 0%, #d8f5f2 100%);
+      border-bottom: 1.5px solid var(--border);
+      padding: 1.6rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .hub-card-top-info h3 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .hub-card-top-info p  { font-size: 0.78rem; color: var(--text-soft); }
+    .hub-card-top-badge {
+      background: white; border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 0.3rem 0.85rem;
+      font-size: 0.76rem; font-weight: 700; color: var(--teal);
+    }
+
+    .hub-nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); }
+
+    .hub-nav-item {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.6rem; padding: 2rem 0.8rem; text-decoration: none;
+      border-right: 1px solid var(--border-soft);
+      transition: all 0.26s ease; position: relative; overflow: hidden;
+      background: var(--surface);
+    }
+    .hub-nav-item:last-child { border-right: none; }
+
+    .hub-nav-item::before {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3px; opacity: 0; transition: opacity 0.22s;
+    }
+    .hub-nav-item:hover { transform: translateY(-4px); }
+    .hub-nav-item:hover::before { opacity: 1; }
+
+    .nav-study:hover    { background: var(--blue-pale); }
+    .nav-recycle:hover  { background: var(--green-pale); }
+    .nav-jobs:hover     { background: var(--orange-pale); }
+    .nav-feedback:hover { background: var(--purple-pale); }
+    .nav-projects:hover { background: var(--red-pale); }
+
+    .nav-study::before    { background: linear-gradient(90deg,#4a90d9,#64b0f4); }
+    .nav-recycle::before  { background: linear-gradient(90deg,#27ae60,#55d98d); }
+    .nav-jobs::before     { background: linear-gradient(90deg,#e67e22,#f0a050); }
+    .nav-feedback::before { background: linear-gradient(90deg,#8e44ad,#c07de0); }
+    .nav-projects::before { background: linear-gradient(90deg,#e74c3c,#f07070); }
+
+    .hub-nav-icon {
+      width: 58px; height: 58px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.7rem; transition: transform 0.25s, box-shadow 0.25s;
+      border: 1.5px solid transparent;
+    }
+    .hub-nav-item:hover .hub-nav-icon { transform: scale(1.1) translateY(-2px); }
+
+    .nav-study   .hub-nav-icon { background: var(--blue-pale);   border-color: rgba(74,144,217,0.2); }
+    .nav-recycle .hub-nav-icon { background: var(--green-pale);  border-color: rgba(39,174,96,0.2); }
+    .nav-jobs    .hub-nav-icon { background: var(--orange-pale); border-color: rgba(230,126,34,0.2); }
+    .nav-feedback .hub-nav-icon{ background: var(--purple-pale); border-color: rgba(142,68,173,0.2); }
+    .nav-projects .hub-nav-icon{ background: var(--red-pale);    border-color: rgba(231,76,60,0.2); }
+
+    .hub-nav-item:hover.nav-study   .hub-nav-icon { box-shadow: 0 6px 20px rgba(74,144,217,0.25); }
+    .hub-nav-item:hover.nav-recycle .hub-nav-icon { box-shadow: 0 6px 20px rgba(39,174,96,0.25); }
+    .hub-nav-item:hover.nav-jobs    .hub-nav-icon { box-shadow: 0 6px 20px rgba(230,126,34,0.25); }
+    .hub-nav-item:hover.nav-feedback .hub-nav-icon{ box-shadow: 0 6px 20px rgba(142,68,173,0.25); }
+    .hub-nav-item:hover.nav-projects .hub-nav-icon{ box-shadow: 0 6px 20px rgba(231,76,60,0.25); }
+
+    .hub-nav-label { font-size: 0.8rem; font-weight: 700; color: var(--text); text-align: center; }
+    .hub-nav-sub   { font-size: 0.67rem; color: var(--text-soft); text-align: center; line-height: 1.3; }
+
+    .hub-quote {
+      padding: 1.8rem 2.5rem; text-align: center;
+      border-top: 1.5px solid var(--border-soft);
+      background: linear-gradient(135deg, #e6f8f7, #f5fdf9);
+      display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+    }
+    .quote-mark { font-size: 2.4rem; color: var(--teal-light); opacity: 0.45; line-height: 1; font-family: Georgia, serif; }
+    .hub-quote blockquote {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.05rem; color: var(--text-mid);
+      line-height: 1.65; max-width: 520px; font-style: italic;
+    }
+    .hub-quote blockquote strong { color: var(--teal); font-style: normal; }
+    .quote-author { font-size: 0.72rem; color: var(--text-soft); font-weight: 700; letter-spacing: 0.8px; }
+
+    /* FOOTER */
+    footer {
+      background: var(--surface); padding: 1.8rem 4rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      border-top: 1.5px solid var(--border);
+      position: relative; z-index: 1;
+    }
+    footer p { font-size: 0.78rem; color: var(--text-soft); }
+
+    /* ANIMATIONS */
+    @keyframes blink    { 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+    @keyframes fade-up  { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes slide-in { from{opacity:0;transform:translateX(-16px);} to{opacity:1;transform:translateX(0);} }
+    @keyframes pop-in   { from{opacity:0;transform:scale(0.94) translateY(18px);} to{opacity:1;transform:scale(1) translateY(0);} }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      #login-section { grid-template-columns: 1fr; }
+      .features-panel { display: none; }
+      .login-panel { padding: 3rem 1.5rem; }
+      #hub-section { padding: 3rem 1.5rem; }
+      .hub-nav-grid { grid-template-columns: repeat(3, 1fr); }
+      .hub-nav-item:nth-child(3) { border-right: none; }
+      footer { padding: 1.5rem; }
+    }
+    @media (max-width: 520px) {
+      .hub-nav-grid { grid-template-columns: repeat(2, 1fr); }
+      .hub-nav-item:nth-child(2), .hub-nav-item:nth-child(4) { border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">
+      <div class="logo-icon">🎓</div>
+      <span class="logo-text">Student<span>Hub</span></span>
+    </a>
+    <div class="nav-pill">B.Tech Student Portal</div>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <!-- LOGIN SECTION -->
+    <section id="login-section">
+
+      <!-- LEFT: Feature Cards -->
+      <div class="features-panel">
+        <div class="features-heading">
+          <span class="eyebrow">✦ What's Inside</span>
+          <h2>Your Academic <span>Command Centre</span></h2>
+        </div>
+
+        <div class="feature-card fc-study">
+          <div class="fc-icon" style="background:var(--blue-pale);">📚</div>
+          <div class="fc-info">
+            <h4>Study Resources</h4>
+            <p>PDFs, notes &amp; videos organised by subject and semester.</p>
+          </div>
+        </div>
+
+        <div class="feature-card fc-recycle">
+          <div class="fc-icon" style="background:var(--green-pale);">♻️</div>
+          <div class="fc-info">
+            <h4>Paper Recycling</h4>
+            <p>Sell old study materials and earn while helping peers.</p>
+          </div>
+        </div>
+
+        <div class="feature-card fc-jobs">
+          <div class="fc-icon" style="background:var(--orange-pale);">💼</div>
+          <div class="fc-info">
+            <h4>Jobs Portal</h4>
+            <p>Part-time and internship listings curated for students.</p>
+          </div>
+        </div>
+
+        <div class="feature-card fc-feedback">
+          <div class="fc-icon" style="background:var(--purple-pale);">💬</div>
+          <div class="fc-info">
+            <h4>Feedback</h4>
+            <p>Share suggestions and help improve the platform.</p>
+          </div>
+        </div>
+
+        <div class="feature-card fc-projects">
+          <div class="fc-icon" style="background:var(--red-pale);">🚀</div>
+          <div class="fc-info">
+            <h4>Mini Projects</h4>
+            <p>Showcase your work and explore student innovations.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Login Form -->
+      <div class="login-panel">
+        <div class="login-box">
+          <div class="login-badge">B.Tech Access</div>
+
+          <h1>Welcome to<br>the <span>Hub</span> 👋</h1>
+          <p class="subtitle">Enter your roll number to access your personalised student dashboard and all platform features.</p>
+
+          <div class="input-group">
+            <label for="roll-number">Roll Number</label>
+            <div class="input-wrap">
+              <span class="input-icon">🎓</span>
+              <input type="text" id="roll-number" placeholder="e.g. 22CS1A0501"
+                maxlength="12" autocomplete="off" spellcheck="false"/>
+            </div>
+            <div class="hint-text">Format: YY + Branch + Section + Number &nbsp;(e.g. 22CS1A0501)</div>
+            <div class="error-msg" id="roll-error">⚠ Please enter a valid roll number to continue.</div>
+          </div>
+
+          <button class="btn-enter" id="enter-btn" onclick="enterHub()">
+            Enter into Hub <span class="arrow">→</span>
+          </button>
+
+          <div class="divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">SECURE ACCESS</span>
+            <div class="divider-line"></div>
+          </div>
+
+          <div class="info-strip">
+            <span class="icon">🔒</span>
+            <span>Your roll number is used only to personalise your experience. No password required for this portal.</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- HUB SECTION -->
+    <section id="hub-section">
+      <div class="hub-section-bg"></div>
+      <div class="hub-inner">
+
+        <div class="hub-welcome">
+  <div class="greet-badge">🎉 Access Granted</div>
+  <h2>You're Inside the <span>Hub</span></h2>
+  <p id="student-roll-display">
+    Logged in as <strong id="display-roll">—</strong> · Choose where to go
+  </p>
+
+  <!-- ✅ ADD THIS BUTTON HERE -->
+  <button onclick="switchAccount()" style="
+  margin-top:12px;
+  padding:8px 16px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#e74c3c,#ff6b6b);
+  color:white;
+  font-weight:600;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(231,76,60,0.3);
+" >
+    Switch Account
+  </button>
+</div>
+
+        <div class="hub-card">
+          <div class="hub-card-top">
+            <div class="hub-card-top-info">
+              <h3>StudentHub Dashboard</h3>
+              <p>Select a module to get started</p>
+            </div>
+            <div class="hub-card-top-badge">5 Modules</div>
+          </div>
+
+          <div class="hub-nav-grid">
+            <a href="home.html" class="hub-nav-item nav-study">
+              <div class="hub-nav-icon">📚</div>
+              <div class="hub-nav-label">Study Resources</div>
+              <div class="hub-nav-sub">Notes, PDFs &amp; Videos</div>
+            </a>
+            <a href="recycle.html" class="hub-nav-item nav-recycle">
+              <div class="hub-nav-icon">♻️</div>
+              <div class="hub-nav-label">Recycling</div>
+              <div class="hub-nav-sub">Sell &amp; Earn from Materials</div>
+            </a>
+            <a href="jobs.html" class="hub-nav-item nav-jobs">
+              <div class="hub-nav-icon">💼</div>
+              <div class="hub-nav-label">Jobs</div>
+              <div class="hub-nav-sub">Internships &amp; Part-time</div>
+            </a>
+            <a href="feedback.html" class="hub-nav-item nav-feedback">
+              <div class="hub-nav-icon">💬</div>
+              <div class="hub-nav-label">Feedback</div>
+              <div class="hub-nav-sub">Share Your Thoughts</div>
+            </a>
+            <a href="projects.html" class="hub-nav-item nav-projects">
+              <div class="hub-nav-icon">🚀</div>
+              <div class="hub-nav-label">Mini Projects</div>
+              <div class="hub-nav-sub">Showcase &amp; Explore</div>
+            </a>
+          </div>
+
+          <div class="hub-quote">
+            <div class="quote-mark">"</div>
+            <blockquote>
+              Education is not the filling of a pail, but the <strong>lighting of a fire</strong>.
+            </blockquote>
+            <div class="quote-author">— W. B. YEATS</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <a class="logo" href="index.html" style="text-decoration:none;">
+        <div class="logo-icon" style="width:28px;height:28px;font-size:0.85rem;">🎓</div>
+        <span class="logo-text" style="font-size:1.1rem;">Student<span>Hub</span></span>
+      </a>
+      <p>© 2026 StudentHub · DTI Problem Statement · B.Tech CSE</p>
+    </footer>
+
+  </div>
+
+  <script>
+  // ✅ Function to show hub after login
+  function showHub(roll) {
+    document.getElementById('display-roll').textContent = roll.toUpperCase();
+
+    const hubSection = document.getElementById('hub-section');
+    hubSection.classList.add('visible');
+
+    // Hide login section
+    document.getElementById('login-section').style.display = 'none';
+
+    setTimeout(() => {
+      hubSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+
+    const btn = document.getElementById('enter-btn');
+    btn.innerHTML = '✓ Welcome, ' + roll.toUpperCase() + '!';
+    btn.style.background = 'linear-gradient(135deg,#27ae60,#55d98d)';
+    btn.style.boxShadow = '0 6px 24px rgba(39,174,96,0.28)';
+    btn.style.cursor = 'default';
+    btn.onclick = null;
+  }
+
+  // ✅ Login function
+  function enterHub() {
+    const input   = document.getElementById('roll-number');
+    const errorEl = document.getElementById('roll-error');
+    const roll    = input.value.trim();
+
+    if (!roll || roll.length < 6) {
+      errorEl.classList.add('show');
+      input.style.borderColor = '#e74c3c';
+      input.focus();
+      return;
+    }
+
+    errorEl.classList.remove('show');
+    input.style.borderColor = '';
+
+    // ✅ Save roll number
+    localStorage.setItem("studentRoll", roll.toUpperCase());
+
+    // ✅ Show hub
+    showHub(roll);
+  }
+
+  // ✅ Auto login when page loads
+  window.onload = function() {
+    const savedRoll = localStorage.getItem("studentRoll");
+
+    if (savedRoll) {
+      showHub(savedRoll);
+    }
+  };
+
+  // ✅ Switch account (NEW FEATURE 🔥)
+  function switchAccount() {
+    // remove saved login
+    localStorage.removeItem("studentRoll");
+
+    // show login section again
+    document.getElementById('login-section').style.display = 'grid';
+
+    // hide hub
+    document.getElementById('hub-section').classList.remove('visible');
+
+    // clear input
+    const input = document.getElementById('roll-number');
+    input.value = '';
+    input.focus();
+
+    // reset button
+    const btn = document.getElementById('enter-btn');
+    btn.innerHTML = 'Enter into Hub →';
+    btn.style.background = 'linear-gradient(135deg, var(--teal), var(--teal-light))';
+    btn.style.boxShadow = '0 6px 24px rgba(15,155,142,0.28)';
+    btn.style.cursor = 'pointer';
+    btn.onclick = enterHub;
+  }
+
+  // ✅ Enter key support
+  document.getElementById('roll-number').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      enterHub();
+    }
+  });
+
+  // ✅ Remove error when typing
+  document.getElementById('roll-number').addEventListener('input', function() {
+    document.getElementById('roll-error').classList.remove('show');
+    this.style.borderColor = '';
+  });
+</script>
+
+</body>
+</html>
