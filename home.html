@@ -25,7 +25,6 @@
         .logo { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:500; background:linear-gradient(120deg,#0b4d39,#197a59); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:flex; align-items:center; gap:10px; }
         .logo i { background:rgba(50,120,90,.18); padding:10px; border-radius:50%; color:#1b6e50; font-size:1.6rem; -webkit-text-fill-color:#1b6e50; }
 
-        /* ── PROFILE DROPDOWN ── */
         .profile-wrap { position:relative; z-index:200; }
         .profile-trigger {
             background:rgba(255,255,255,.72); backdrop-filter:blur(6px);
@@ -93,9 +92,7 @@
         .pdf-btn:hover { background:linear-gradient(105deg,#1c8864,#126a4a); border-color:transparent; color:white; box-shadow:0 6px 14px -6px #1c6048; }
         .pdf-btn.open-pdf { background:rgba(50,158,117,.12); border-color:rgba(50,158,117,.3); color:var(--green-deep); }
         .pdf-btn.open-pdf:hover { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; }
-        .own-note { font-size:.73rem; color:var(--green-mid); font-style:italic; margin-top:.6rem; padding:.35rem .75rem; background:rgba(50,158,117,.07); border-radius:20px; }
 
-        /* VIDEO */
         .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.3rem; margin-bottom:2rem; }
         .video-card { background:rgba(255,255,255,.52); backdrop-filter:blur(10px); border-radius:28px; overflow:hidden; border:1px solid var(--glass-border); box-shadow:0 16px 32px -16px var(--shadow-deep); transition:.22s; }
         .video-card:hover { transform:translateY(-4px); box-shadow:0 24px 40px -16px rgba(20,80,55,.22); }
@@ -110,22 +107,17 @@
         .section-divider { height:1px; background:linear-gradient(90deg,transparent,rgba(50,158,117,.3),transparent); margin:1.5rem 0; }
         .footer-note { text-align:center; color:var(--text-mid); padding:.9rem 2rem; background:rgba(255,255,255,.3); border-radius:60px; font-size:.86rem; font-weight:300; }
 
-        /* ── VIEWER MODAL ── */
+        /* VIEWER MODAL */
         .viewer-modal { position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:1000; visibility:hidden; opacity:0; transition:.25s; }
         .viewer-modal.show { visibility:visible; opacity:1; }
         .modal-content { background:rgba(235,248,242,.98); backdrop-filter:blur(20px); width:93vw; max-width:1100px; height:92vh; border-radius:36px; padding:1.4rem 1.6rem 1.2rem; display:flex; flex-direction:column; box-shadow:0 50px 80px -20px rgba(0,0,0,.55); border:1px solid var(--glass-border); }
         .modal-header { display:flex; justify-content:space-between; align-items:center; padding-bottom:.85rem; border-bottom:1px solid rgba(50,158,117,.2); margin-bottom:.8rem; flex-wrap:wrap; gap:8px; }
         .modal-header h2 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--text-dark); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .modal-actions { display:flex; gap:8px; flex-shrink:0; }
-        .m-btn { display:inline-flex; align-items:center; gap:6px; padding:.42rem 1.1rem; border-radius:30px; font-size:.8rem; font-weight:600; cursor:pointer; border:none; font-family:'DM Sans',sans-serif; transition:.15s; }
-        .m-btn-open { background:linear-gradient(105deg,#1c8864,#126a4a); color:white; box-shadow:0 6px 14px -6px #1c6048; }
-        .m-btn-open:hover { transform:translateY(-1px); }
         .close-btn { background:rgba(255,255,255,.75); border:1px solid rgba(180,210,190,.8); width:36px; height:36px; border-radius:50%; font-size:1.15rem; cursor:pointer; color:var(--text-dark); display:flex; align-items:center; justify-content:center; transition:.15s; }
         .close-btn:hover { background:#e11d48; color:white; border-color:#e11d48; }
         .pdf-frame { flex:1; border-radius:18px; overflow:hidden; border:1px solid rgba(180,210,190,.5); background:#f8fbf9; position:relative; }
         .pdf-frame iframe { width:100%; height:100%; border:none; display:block; }
 
-        /* Loading / error states inside modal */
         .viewer-status { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:2rem; text-align:center; border-radius:18px; background:rgba(240,250,245,.95); }
         .viewer-status.hidden { display:none; }
         .spinner { width:44px; height:44px; border:4px solid rgba(50,158,117,.2); border-top-color:#1c8864; border-radius:50%; animation:spin .8s linear infinite; }
@@ -183,91 +175,93 @@
     </div>
 
     <div class="card-grid" id="pdfGrid">
-
-        <!-- DS -->
-        <div class="card">
-            <h3>📂 Data Structures</h3>
-            <div class="meta">Prof. Sharma · 5 units · 2025</div>
-            <span class="badge">✅ your files</span>
-            <div class="pdf-units">
-                <div class="unit-item"><span class="unit-name">Unit 1 – Arrays &amp; Linked Lists</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit1.docx" data-subject="DS – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit1.docx">📥 DOCX</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 2 – Stacks &amp; Queues</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit2.docx" data-subject="DS – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit2.docx">📥 DOCX</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 3 – Trees &amp; Graphs</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit3.docx" data-subject="DS – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit3.docx">📥 DOCX</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 4 – Sorting &amp; Searching</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit4.docx" data-subject="DS – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit4.docx">📥 DOCX</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 5 – Advanced Trees</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="ds-unit5.docx" data-subject="DS – Unit 5">📖 Open</a><a class="pdf-btn download-btn" data-pdf="ds-unit5.docx">📥 DOCX</a></div></div>
-            </div>
-            <p class="own-note">📁 Keep ds-unit1.docx…ds-unit5.docx in the same folder as this HTML</p>
-        </div>
+    
 
         <!-- DBMS -->
         <div class="card">
             <h3>🗄️ DBMS</h3>
-            <div class="meta">Dr. Patel · 5 units · 2025</div>
-            <span class="badge">✅ your files</span>
+            <div class="meta">Ramakrishnan &amp; Gehrke · Database Management Systems · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
-                <div class="unit-item"><span class="unit-name">Unit 1 – ER Model</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit1.pdf" data-subject="DBMS – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit1.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 2 – Relational Algebra</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit2.pdf" data-subject="DBMS – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit2.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 3 – SQL Queries</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit3.pdf" data-subject="DBMS – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit3.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 4 – Normalization</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit4.pdf" data-subject="DBMS – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit4.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 5 – Transactions</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/dbms-unit5.pdf" data-subject="DBMS – Unit 5">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/dbms-unit5.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 1 – ER Model</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.db-book.com/slides-dir/PDF-dir/ch1.pdf" data-subject="DBMS – ER Model">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.db-book.com/slides-dir/PDF-dir/ch1.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Relational Algebra</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.db-book.com/slides-dir/PDF-dir/ch2.pdf" data-subject="DBMS – Relational Algebra">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.db-book.com/slides-dir/PDF-dir/ch2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – SQL Queries</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.db-book.com/slides-dir/PDF-dir/ch3.pdf" data-subject="DBMS – SQL Queries">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.db-book.com/slides-dir/PDF-dir/ch3.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Normalization</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.db-book.com/slides-dir/PDF-dir/ch8.pdf" data-subject="DBMS – Normalization">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.db-book.com/slides-dir/PDF-dir/ch8.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Transactions &amp; Concurrency</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.db-book.com/slides-dir/PDF-dir/ch17.pdf" data-subject="DBMS – Transactions">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.db-book.com/slides-dir/PDF-dir/ch17.pdf','_blank')">📥 PDF</a>
+                </div></div>
             </div>
-            <p class="own-note">📁 Keep files inside a <strong>PDFS/</strong> folder next to this HTML</p>
         </div>
 
-        <!-- OS -->
-        <div class="card">
-            <h3>🐧 Operating Systems</h3>
-            <div class="meta">Your notes · 3 units</div>
-            <span class="badge">✅ your files</span>
-            <div class="pdf-units">
-                <div class="unit-item"><span class="unit-name">Unit 1 – Processes &amp; Threads</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/os-unit1.pdf" data-subject="OS – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/os-unit1.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 2 – Memory Management</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/os-unit2.docx" data-subject="OS – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/os-unit2.docx">📥 DOCX</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 3 – File Systems</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/os-unit3.pdf" data-subject="OS – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/os-unit3.pdf">📥 PDF</a></div></div>
-            </div>
-            <p class="own-note">📁 Keep OS files inside <strong>PDFS/</strong> folder</p>
-        </div>
+       
 
         <!-- UHV -->
         <div class="card">
             <h3>🌿 UHV</h3>
-            <div class="meta">Universal Human Values · 4 units</div>
-            <span class="badge">✅ your files</span>
+            <div class="meta">R.R. Gaur, R. Asthana, G.P. Bagaria · Universal Human Values · AICTE</div>
+            <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
-                <div class="unit-item"><span class="unit-name">Unit 1 – Introduction</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit1.pdf" data-subject="UHV – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit1.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 2 – Harmony in Self</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit2.pdf" data-subject="UHV – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit2.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 3 – Harmony in Family</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit3.pdf" data-subject="UHV – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit3.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 4 – Harmony in Society</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/uhv-unit4.pdf" data-subject="UHV – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/uhv-unit4.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 1 – Introduction to Value Education</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf" data-subject="UHV – Introduction">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – Harmony in the Self</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf" data-subject="UHV – Harmony in Self">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Harmony in Family &amp; Society</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf" data-subject="UHV – Harmony in Family">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Harmony in Nature &amp; Existence</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf" data-subject="UHV – Harmony in Nature">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://www.iitk.ac.in/dora/data/Universal-Human-Values.pdf','_blank')">📥 PDF</a>
+                </div></div>
             </div>
-            <p class="own-note">📁 Keep UHV files inside <strong>PDFS/</strong> folder</p>
         </div>
 
-        <!-- SE -->
-        <div class="card">
-            <h3>🛠️ Software Engineering</h3>
-            <div class="meta">SE · 4 units</div>
-            <span class="badge">✅ your files</span>
-            <div class="pdf-units">
-                <div class="unit-item"><span class="unit-name">Unit 1 – SDLC Models</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit1.pdf" data-subject="SE – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit1.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 2 – Requirements</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit2.pdf" data-subject="SE – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit2.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 3 – Design</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit3.pdf" data-subject="SE – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit3.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 4 – Testing</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/se-unit4.pdf" data-subject="SE – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/se-unit4.pdf">📥 PDF</a></div></div>
-            </div>
-            <p class="own-note">📁 Keep SE files inside <strong>PDFS/</strong> folder</p>
-        </div>
+       
 
         <!-- JAVA -->
         <div class="card">
             <h3>☕ Java Programming</h3>
-            <div class="meta">Java · 5 units · 2025</div>
-            <span class="badge">✅ your files</span>
+            <div class="meta">Oracle Java Docs &amp; Think Java · Allen Downey · free</div>
+            <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
-                <div class="unit-item"><span class="unit-name">Unit 1 – Basics &amp; Syntax</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit1.pdf" data-subject="Java – Unit 1">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit1.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 2 – OOP Concepts</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit2.pdf" data-subject="Java – Unit 2">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit2.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 3 – Collections</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit3.pdf" data-subject="Java – Unit 3">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit3.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 4 – Multithreading</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit4.pdf" data-subject="Java – Unit 4">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit4.pdf">📥 PDF</a></div></div>
-                <div class="unit-item"><span class="unit-name">Unit 5 – Java 8 Features</span><div class="unit-actions"><a class="pdf-btn open-pdf" data-file="PDFS/java-unit5.pdf" data-subject="Java – Unit 5">📖 Open</a><a class="pdf-btn download-btn" data-pdf="PDFS/java-unit5.pdf">📥 PDF</a></div></div>
+                <div class="unit-item"><span class="unit-name">Unit 1 – Basics &amp; Syntax</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkjava7/thinkjava2.pdf" data-subject="Java – Basics &amp; Syntax">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkjava7/thinkjava2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 2 – OOP Concepts</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkjava7/thinkjava2.pdf" data-subject="Java – OOP Concepts">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkjava7/thinkjava2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 3 – Collections &amp; Generics</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkjava7/thinkjava2.pdf" data-subject="Java – Collections">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkjava7/thinkjava2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 4 – Multithreading &amp; Concurrency</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkjava7/thinkjava2.pdf" data-subject="Java – Multithreading">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkjava7/thinkjava2.pdf','_blank')">📥 PDF</a>
+                </div></div>
+                <div class="unit-item"><span class="unit-name">Unit 5 – Java 8 Features &amp; Streams</span><div class="unit-actions">
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkjava7/thinkjava2.pdf" data-subject="Java – Java 8 Features">📖 Open</a>
+                    <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkjava7/thinkjava2.pdf','_blank')">📥 PDF</a>
+                </div></div>
             </div>
-            <p class="own-note">📁 Keep Java files inside <strong>PDFS/</strong> folder</p>
         </div>
 
         <!-- COMPUTER NETWORKS -->
@@ -302,11 +296,11 @@
         <!-- ALGORITHMS -->
         <div class="card">
             <h3>⚡ Algorithms</h3>
-            <div class="meta">CLRS / MIT · 5 units · free</div>
+            <div class="meta">Jeff Erickson · Algorithms · UIUC · free official</div>
             <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
                 <div class="unit-item"><span class="unit-name">Unit 1 – Complexity &amp; Big-O</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – CLRS">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – Big-O">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 2 – Sorting Algorithms</span><div class="unit-actions">
@@ -314,7 +308,7 @@
                     <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 3 – Divide &amp; Conquer</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – D&C">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf" data-subject="Algorithms – D&amp;C">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 4 – Dynamic Programming</span><div class="unit-actions">
@@ -335,19 +329,19 @@
             <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
                 <div class="unit-item"><span class="unit-name">Unit 1 – Intro, Variables &amp; Operators</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C Programming – Let Us C">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Variables &amp; Operators">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 2 – Functions &amp; Recursion</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Functions">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Functions &amp; Recursion">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 3 – Arrays, Pointers &amp; Strings</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Arrays & Pointers">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Arrays &amp; Pointers">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 4 – Structures &amp; File I/O</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Structures">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://publications.gbdirect.co.uk/c_book/the_c_book.pdf" data-subject="C – Structures &amp; File I/O">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://publications.gbdirect.co.uk/c_book/the_c_book.pdf','_blank')">📥 PDF</a>
                 </div></div>
             </div>
@@ -360,11 +354,11 @@
             <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
                 <div class="unit-item"><span class="unit-name">Unit 1 – Supervised Learning</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Stanford CS229">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Supervised Learning">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 2 – Regression &amp; SVM</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Regression">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Regression &amp; SVM">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 3 – Neural Networks</span><div class="unit-actions">
@@ -372,11 +366,11 @@
                     <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 4 – Unsupervised Learning</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Unsupervised">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Unsupervised Learning">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 5 – Model Evaluation</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Evaluation">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://www.cs.cmu.edu/~tom/mlbook.pdf" data-subject="ML – Model Evaluation">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://www.cs.cmu.edu/~tom/mlbook.pdf','_blank')">📥 PDF</a>
                 </div></div>
             </div>
@@ -385,11 +379,11 @@
         <!-- CLOUD COMPUTING -->
         <div class="card">
             <h3>☁️ Cloud Computing</h3>
-            <div class="meta">AWS Official Whitepapers · free</div>
+            <div class="meta">NIST SP 800-145 · AWS Whitepapers · free official</div>
             <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
                 <div class="unit-item"><span class="unit-name">Unit 1 – Cloud Fundamentals</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" data-subject="Cloud – AWS Overview">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf" data-subject="Cloud – Fundamentals">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 2 – IaaS / PaaS / SaaS</span><div class="unit-actions">
@@ -410,11 +404,11 @@
         <!-- WEB DEVELOPMENT -->
         <div class="card">
             <h3>🌍 Web Development</h3>
-            <div class="meta">Mozilla · W3C · open notes · free</div>
+            <div class="meta">Eloquent JavaScript · Marijn Haverbeke · free official</div>
             <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
                 <div class="unit-item"><span class="unit-name">Unit 1 – HTML &amp; CSS Basics</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – HTML & CSS">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://eloquentjavascript.net/Eloquent_JavaScript.pdf" data-subject="Web – HTML &amp; CSS">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://eloquentjavascript.net/Eloquent_JavaScript.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 2 – JavaScript Fundamentals</span><div class="unit-actions">
@@ -443,11 +437,11 @@
             <span class="badge badge-online">🌍 online PDF</span>
             <div class="pdf-units">
                 <div class="unit-item"><span class="unit-name">Unit 1 – Python Basics &amp; Syntax</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Think Python Book">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Basics &amp; Syntax">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 2 – Functions &amp; Modules</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Functions">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Functions &amp; Modules">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 3 – OOP in Python</span><div class="unit-actions">
@@ -455,7 +449,7 @@
                     <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 4 – File Handling &amp; Exceptions</span><div class="unit-actions">
-                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – Files">📖 Open</a>
+                    <a class="pdf-btn open-pdf" data-file="https://greenteapress.com/thinkpython2/thinkpython2.pdf" data-subject="Python – File Handling">📖 Open</a>
                     <a class="pdf-btn" onclick="window.open('https://greenteapress.com/thinkpython2/thinkpython2.pdf','_blank')">📥 PDF</a>
                 </div></div>
                 <div class="unit-item"><span class="unit-name">Unit 5 – NumPy, Pandas &amp; Libraries</span><div class="unit-actions">
@@ -478,10 +472,6 @@
 
     <div class="video-grid" id="videoGrid">
         <div class="video-card">
-            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLDN4rrl48XKpZkf03iYFI-O29szjTrs_O" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
-            <div class="video-info"><div class="video-title">DSA Full Course — Abdul Bari</div><div class="video-meta"><span class="vtag">Data Structures</span><span><i class="fas fa-eye"></i> 8.2M views</span><span><i class="fas fa-clock"></i> 12 hrs</span></div></div>
-        </div>
-        <div class="video-card">
             <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLmXKhU9FNesR1rSES7oLdJaNFgmuj0SYV" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
             <div class="video-info"><div class="video-title">DBMS Complete — Gate Smashers</div><div class="video-meta"><span class="vtag">DBMS</span><span><i class="fas fa-eye"></i> 5.6M views</span><span><i class="fas fa-clock"></i> 8 hrs</span></div></div>
         </div>
@@ -496,10 +486,6 @@
         <div class="video-card">
             <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLdo5W4Nhv31a8UcMN9-35ghv8qyFWD9_S" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
             <div class="video-info"><div class="video-title">C Programming — Jenny's Lectures</div><div class="video-meta"><span class="vtag">C Programming</span><span><i class="fas fa-eye"></i> 7.2M views</span><span><i class="fas fa-clock"></i> 34 hrs</span></div></div>
-        </div>
-        <div class="video-card">
-            <div class="video-embed"><iframe src="https://www.youtube.com/embed/videoseries?list=PLZoTAELRoHXiSa6hSX5MfZZH-RBFGdEYs" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
-            <div class="video-info"><div class="video-title">Machine Learning — Krish Naik</div><div class="video-meta"><span class="vtag">Machine Learning</span><span><i class="fas fa-eye"></i> 9.8M views</span><span><i class="fas fa-clock"></i> 20 hrs</span></div></div>
         </div>
         <div class="video-card">
             <div class="video-embed"><iframe src="https://www.youtube.com/embed/rfscVS0vtbw" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe></div>
@@ -528,15 +514,14 @@
     </div>
 
     <div class="footer-note">
-        <i class="fas fa-info-circle"></i>
-        <strong>Your own files</strong> (DS, DBMS, OS, UHV, SE, Java) → put them in a <code>PDFS/</code> folder next to this HTML &nbsp;·&nbsp;
-        <strong>Other subjects</strong> → linked to free public PDFs from Stanford / MIT / AWS &nbsp;·&nbsp;
-        Videos play directly on this page
+        <i class="fas fa-globe"></i>
+        All PDFs are sourced from the best <strong>free, open-access textbooks</strong> — OpenDSA, Silberschatz (OS), Ramakrishnan (DBMS), Sommerville (SE), Think Java, Jeff Erickson (Algorithms), CMU ML, and more.
+        No local files needed — everything loads directly from the web.
     </div>
 
 </div><!-- /glass-case -->
 
-<!-- ══════════ VIEWER MODAL (local files only) ══════════ -->
+<!-- VIEWER MODAL -->
 <div class="viewer-modal" id="viewerModal">
   <div class="modal-content">
     <div class="modal-header">
@@ -547,16 +532,7 @@
       <div class="viewer-status" id="statusLoading">
         <div class="spinner"></div>
         <div class="status-title">Loading…</div>
-        <div class="status-sub">Please wait.</div>
-      </div>
-      <div class="viewer-status hidden" id="statusDocx">
-        <div style="font-size:2.5rem">📄</div>
-        <div class="status-title">DOCX — cannot preview in browser</div>
-        <div class="status-sub">Download and open in MS Word, or upload to Google Docs.</div>
-        <div class="fallback-btns">
-          <a id="docxDownload" href="#" download class="fb-btn fb-btn-primary"><i class="fas fa-download"></i> Download File</a>
-          <a href="https://drive.google.com/drive/my-drive" target="_blank" class="fb-btn fb-btn-secondary"><i class="fab fa-google-drive"></i> Google Drive</a>
-        </div>
+        <div class="status-sub">Please wait while the PDF loads.</div>
       </div>
       <iframe id="pdfIframe" src="about:blank" title="PDF Viewer"
               style="width:100%;height:100%;border:none;display:none;"></iframe>
@@ -566,7 +542,6 @@
 
 <script>
 (function () {
-    /* ── Roll / Nav ── */
     var urlParams   = new URLSearchParams(window.location.search);
     var roll        = urlParams.get('roll') || localStorage.getItem('studentRoll') || '';
     var rollDisplay = roll || '—';
@@ -596,10 +571,10 @@
 
     var navItems = [
         { name:'📄 PDFs & Videos', page:'home.html',      active:true  },
-        { name:'♻️ Recycling',     page:'recycle.html', active:false },
-        { name:'💼 Jobs',          page:'jobs.html',      active:false },
-        { name:'💬 Feedback',      page:'feedback.html',  active:false },
-        { name:'🚀 Projects',      page:'projects.html',  active:false }
+        { name:'♻️ Recycling',     page:'recycle.html',   active:false },
+        { name:'💼 Jobs',          page:'jobs.html',       active:false },
+        { name:'💬 Feedback',      page:'feedback.html',   active:false },
+        { name:'🚀 Projects',      page:'projects.html',   active:false }
     ];
     var navMenu = document.getElementById('navMenu');
     navItems.forEach(function(item){
@@ -611,89 +586,35 @@
         div.appendChild(a); navMenu.appendChild(div);
     });
 
-    /* ── Modal (for local files) ── */
-    var modal       = document.getElementById('viewerModal');
-    var modalTitle  = document.getElementById('modalTitle');
-    var pdfIframe   = document.getElementById('pdfIframe');
-    var closeBtn    = document.getElementById('closeModalBtn');
-    var stLoading   = document.getElementById('statusLoading');
-    var stDocx      = document.getElementById('statusDocx');
-    var docxDl      = document.getElementById('docxDownload');
-
-    function showStatus(el) {
-        [stLoading, stDocx].forEach(function(e){ e.classList.add('hidden'); });
-        pdfIframe.style.display = 'none';
-        if (el) el.classList.remove('hidden');
-    }
+    /* Modal */
+    var modal      = document.getElementById('viewerModal');
+    var modalTitle = document.getElementById('modalTitle');
+    var pdfIframe  = document.getElementById('pdfIframe');
+    var closeBtn   = document.getElementById('closeModalBtn');
+    var stLoading  = document.getElementById('statusLoading');
 
     function closeModal() {
         modal.classList.remove('show');
         document.body.style.overflow = '';
         pdfIframe.src = 'about:blank';
-        showStatus(null);
+        pdfIframe.style.display = 'none';
+        stLoading.classList.remove('hidden');
     }
-
     closeBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
     document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
 
-    /* ── Open PDF buttons ── */
+    /* Open PDF buttons — all are remote, open in new tab */
     document.querySelectorAll('.open-pdf').forEach(function(btn){
         btn.addEventListener('click', function(e){
             e.preventDefault();
             var file    = this.getAttribute('data-file');
             var subject = this.getAttribute('data-subject') || 'Document';
-            var ext     = file.split('?')[0].split('.').pop().toLowerCase();
-
-            /* DOCX → show modal with download tip */
-            if (ext === 'docx' || ext === 'doc') {
-                modalTitle.innerText = '📄 ' + subject;
-                showStatus(stDocx);
-                docxDl.href = file;
-                docxDl.setAttribute('download', file.split('/').pop());
-                modal.classList.add('show');
-                document.body.style.overflow = 'hidden';
-                return;
-            }
-
-            /* REMOTE PDF → open directly in new tab (browser has built-in PDF viewer) */
-            if (file.startsWith('http')) {
-                window.open(file, '_blank');
-                return;
-            }
-
-            /* LOCAL PDF → show in modal iframe (works when served via server) */
-            modalTitle.innerText = '📖 ' + subject;
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-            showStatus(stLoading);
-
-            pdfIframe.onload = function(){
-                stLoading.classList.add('hidden');
-                pdfIframe.style.display = 'block';
-            };
-            pdfIframe.src = file;
+            window.open(file, '_blank');
         });
     });
 
-    /* ── Download buttons ── */
-    document.querySelectorAll('a.download-btn[data-pdf]').forEach(function(btn){
-        var file = btn.getAttribute('data-pdf');
-        var ext  = file.split('.').pop().toLowerCase();
-        btn.innerHTML = (ext === 'docx' || ext === 'doc') ? '📥 DOCX' : '📥 PDF';
-        btn.addEventListener('click', function(e){
-            e.preventDefault();
-            var a = document.createElement('a');
-            a.href = file; a.download = file.split('/').pop();
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            var orig = this.innerHTML;
-            this.innerHTML = '✅ Done!';
-            var self = this;
-            setTimeout(function(){ self.innerHTML = orig; }, 1200);
-        });
-    });
-
-    /* ── Search ── */
+    /* Search */
     var searchInput = document.getElementById('searchInput');
     function filter(){
         var term = searchInput.value.toLowerCase().trim();
